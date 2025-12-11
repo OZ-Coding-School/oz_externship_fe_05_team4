@@ -1,4 +1,5 @@
 import './App.css'
+import Header from '@/components/common/Header'
 import { BrowserRouter, Routes, Route } from 'react-router'
 import {
   MainPage,
@@ -11,6 +12,7 @@ import {
 function App() {
   return (
     <BrowserRouter>
+      <Header />
       <Routes>
         <Route path="/" element={<MainPage />} />
         <Route path="*" element={<NotFound />} />
