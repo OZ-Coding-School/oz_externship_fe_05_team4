@@ -78,6 +78,8 @@ jobs:
                 "lollonoaJoro")
                   MENTIONS="$MENTIONS <@738738910724882462>"
                   ;;
+                  "Nagi-ei") MENTION="<@387985791193972736>"
+                  ;;
                 *)
                   MENTIONS="$MENTIONS @$login"
                   ;;
@@ -91,7 +93,7 @@ jobs:
                 "G-jjunny") MENTIONS="<@382857559532371968>" ;;
                 "juhan0628") MENTIONS="<@820867737571950592>" ;;
                 "pje8740") MENTIONS="<@737203138313977936>" ;;
-                "lollonoaJoro") MENTIONS="<@738738910724882462>"
+                "lollonoaJoro") MENTIONS="<@738738910724882462>" ;;
                 "Nagi-ei") MENTION="<@387985791193972736>" ;;
                 *) MENTIONS="@$CURRENT_REVIEWER" ;;
               esac
