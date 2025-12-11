@@ -21,7 +21,6 @@ function MainPage() {
       <section className="mb-10 border-b pb-10">
         <h2 className="mb-4 text-xl font-bold">팀원 작업 공간</h2>
         <div className="flex gap-3">
-          {/* App.tsx에 설정한 path와 똑같이 적어주세요 */}
           <Link to="/JaeMin">
             <Button variant="outline">JaeMin Page</Button>
           </Link>
