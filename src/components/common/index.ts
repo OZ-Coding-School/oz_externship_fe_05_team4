@@ -12,3 +12,4 @@ export {
   DialogContent,
   DialogClose,
 } from '@/components/ui/dialog'
+export * from './Activity'
