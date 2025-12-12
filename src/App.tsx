@@ -1,16 +1,23 @@
-import Header from '@/components/common/Header'
-import { BrowserRouter } from 'react-router'
+import './App.css'
+import { BrowserRouter, Routes, Route } from 'react-router'
+import {
+  MainPage,
+  NotFound,
+  JaeMinPage,
+  JaeEunPage,
+  HanbyeolPage,
+} from './pages'
 
 function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-white p-8">
-        <Header />
-
-        <div className="mt-10">
-          <p>여기는 본문 영역입니다.</p>
-        </div>
-      </div>
+      <Routes>
+        <Route path="/" element={<MainPage />} />
+        <Route path="*" element={<NotFound />} />
+        <Route path="/JaeMin" element={<JaeMinPage />} />
+        <Route path="/JaeEun" element={<JaeEunPage />} />
+        <Route path="/HanByeol" element={<HanbyeolPage />} />
+      </Routes>
     </BrowserRouter>
   )
 }
