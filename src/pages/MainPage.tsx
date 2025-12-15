@@ -21,16 +21,16 @@ function MainPage() {
       <section className="mb-10 border-b pb-10">
         <h2 className="mb-4 text-xl font-bold">팀원 작업 공간</h2>
         <div className="flex gap-3">
-          <Link to="/JaeMin">
-            <Button variant="outline">JaeMin Page</Button>
+          <Link to="/Question/Detail/1">
+            <Button variant="outline">Detail Page</Button>
           </Link>
 
-          <Link to="/JaeEun">
-            <Button variant="outline">JaeEun Page</Button>
+          <Link to="/Question/Create">
+            <Button variant="outline">Create Page</Button>
           </Link>
 
-          <Link to="/HanByeol">
-            <Button variant="outline">HanByeol Page</Button>
+          <Link to="/Question/Edit/1">
+            <Button variant="outline">Edit Page</Button>
           </Link>
         </div>
       </section>
