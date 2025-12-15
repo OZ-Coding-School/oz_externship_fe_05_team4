@@ -1,7 +1,7 @@
 import './App.css'
 import Header from '@/components/common/Header'
 import { BrowserRouter, Routes, Route } from 'react-router'
-import { MainPage, NotFound, DetailPage, CreatePage, EditPage } from './pages'
+import { MainPage, NotFound, DetailPage, CreatePage, EditPage } from '@/pages'
 
 function App() {
   return (
