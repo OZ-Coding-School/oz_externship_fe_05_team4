@@ -1,13 +1,7 @@
 import './App.css'
 import Header from '@/components/common/Header'
 import { BrowserRouter, Routes, Route } from 'react-router'
-import {
-  MainPage,
-  NotFound,
-  JaeMinPage,
-  JaeEunPage,
-  HanbyeolPage,
-} from './pages'
+import { MainPage, NotFound, DetailPage, CreatePage } from './pages'
 
 function App() {
   return (
@@ -17,9 +11,8 @@ function App() {
       <Routes>
         <Route path="/" element={<MainPage />} />
         <Route path="*" element={<NotFound />} />
-        <Route path="/JaeMin" element={<JaeMinPage />} />
-        <Route path="/JaeEun" element={<JaeEunPage />} />
-        <Route path="/HanByeol" element={<HanbyeolPage />} />
+        <Route path="/Question/Detail/:id" element={<DetailPage />} />
+        <Route path="/Question/Create" element={<CreatePage />} />
       </Routes>
     </BrowserRouter>
   )
