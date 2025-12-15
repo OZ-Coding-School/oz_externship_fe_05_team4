@@ -1,5 +1,4 @@
 import SearchBar from '@/components/questions/SearchBar'
-import SortMenu from '@/components/questions/SortingMenu'
 import Tabs from '@/components/questions/Tabs'
 import { Link } from 'react-router'
 
@@ -12,17 +11,16 @@ export default function MainPage() {
 
       <section className="mb-6 flex items-center justify-between gap-4">
         <SearchBar />
+
         <Link to="/Question/Create">
           <button className="h-10 rounded-full bg-[var(--color-primary)] px-5 text-sm font-semibold text-white hover:bg-[var(--color-primary-400)]">
             질문 등록하기
           </button>
         </Link>
       </section>
+
       <section className="mb-6">
         <Tabs />
-      </section>
-      <section className="mb-6">
-        <SortMenu />
       </section>
     </main>
   )
