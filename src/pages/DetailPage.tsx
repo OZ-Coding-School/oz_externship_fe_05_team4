@@ -51,8 +51,8 @@ export default function JaeminPage() {
               <div className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="text-sm text-gray-700">
-                    <span className="font-bold">랑이</span> | IT스타트업 실무형
-                    풀스택 웹 개발 부트캠프 |{' '}
+                    <span className="font-bold">답변자</span> | IT스타트업
+                    실무형 풀스택 웹 개발 부트캠프 |{' '}
                     <span className="text-purple-700">채택된 답변</span>
                   </div>
                   <Button className="rounded-md bg-purple-700 px-3 py-1 text-sm font-semibold text-white">
