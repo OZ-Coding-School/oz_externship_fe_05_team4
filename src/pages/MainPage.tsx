@@ -3,7 +3,6 @@ import { Link } from 'react-router'
 import { useState } from 'react'
 
 import SortMenu from '@/components/questions/SortingMenu'
-import FilterDialog from '@/components/questions/FilterSheet'
 
 export default function MainPage() {
   const [sort, setSort] = useState<'latest' | 'oldest'>('latest')
@@ -44,7 +43,6 @@ export default function MainPage() {
 
       <section className="mb-4 flex items-center justify-end gap-6 text-sm">
         <SortMenu sort={sort} onChange={setSort} />
-        <FilterDialog />
       </section>
     </main>
   )
