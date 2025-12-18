@@ -17,13 +17,15 @@ const QuestionCreate = () => {
   const [middleCategory, setMiddleCategory] = useState<string>()
   const [subCategory, setSubCategory] = useState<string>()
 
+  const mainOptions = CATEGORY_DATA
+
   const middleOptions = mainCategory
-    ? Object.keys(CATEGORY_DATA[mainCategory])
+    ? (CATEGORY_DATA.find((c) => c.name === mainCategory)?.subCategories ?? [])
     : []
-  const subOptions =
-    mainCategory && middleCategory
-      ? CATEGORY_DATA[mainCategory][middleCategory]
-      : []
+
+  const subOptions = middleCategory
+    ? (middleOptions.find((c) => c.name === middleCategory)?.items ?? [])
+    : []
 
   return (
     <div className="flex w-full flex-col items-center py-10">
@@ -35,43 +37,28 @@ const QuestionCreate = () => {
       <Card className="flex w-full max-w-[944px] flex-col gap-4 rounded-[20px] border px-[38px] py-10">
         <div className="flex w-full gap-[12px]">
           {/* 대분류 */}
-          <Select
-            value={mainCategory}
-            onValueChange={(value) => {
-              setMainCategory(value)
-              setMiddleCategory(undefined)
-              setSubCategory(undefined)
-            }}
-          >
+          <Select onValueChange={setMainCategory}>
             <SelectTrigger>
               <SelectValue placeholder="대분류 선택" />
             </SelectTrigger>
             <SelectContent>
-              {Object.keys(CATEGORY_DATA).map((item) => (
-                <SelectItem key={item} value={item}>
-                  {item}
+              {mainOptions.map((c) => (
+                <SelectItem key={c.id} value={c.name}>
+                  {c.name}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
 
           {/* 중분류 */}
-          <Select
-            key={mainCategory}
-            value={middleCategory}
-            onValueChange={(value) => {
-              setMiddleCategory(value)
-              setSubCategory(undefined)
-            }}
-            disabled={!mainCategory}
-          >
-            <SelectTrigger disabledBg={!mainCategory}>
+          <Select disabled={!mainCategory} onValueChange={setMiddleCategory}>
+            <SelectTrigger>
               <SelectValue placeholder="중분류 선택" />
             </SelectTrigger>
             <SelectContent>
-              {middleOptions.map((item) => (
-                <SelectItem key={item} value={item}>
-                  {item}
+              {middleOptions.map((c) => (
+                <SelectItem key={c.id} value={c.name}>
+                  {c.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -79,18 +66,17 @@ const QuestionCreate = () => {
 
           {/* 소분류 */}
           <Select
-            key={middleCategory}
             value={subCategory}
             onValueChange={setSubCategory}
             disabled={!middleCategory}
           >
-            <SelectTrigger disabledBg={!middleCategory}>
+            <SelectTrigger>
               <SelectValue placeholder="소분류 선택" />
             </SelectTrigger>
             <SelectContent>
               {subOptions.map((item) => (
-                <SelectItem key={item} value={item}>
-                  {item}
+                <SelectItem key={item.id} value={item.name}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectContent>
