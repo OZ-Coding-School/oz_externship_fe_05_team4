@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,7 +7,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/ui/DropdownMenu'
+import profileImg from '@/assets/profile.png'
 
 export default function Header() {
   //Zustand로 대체 예정
@@ -50,7 +51,7 @@ export default function Header() {
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Avatar className="h-8 w-8 cursor-pointer">
-                <AvatarImage src="/me.png" />
+                <AvatarImage src={profileImg} alt="프로필 이미지" />
                 <AvatarFallback>ME</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>

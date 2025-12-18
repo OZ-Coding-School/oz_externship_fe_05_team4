@@ -36,5 +36,4 @@ function CardFooter({
     <div className={cn('border-t border-gray-200 p-4', className)} {...props} />
   )
 }
-
 export { Card, CardHeader, CardContent, CardFooter }

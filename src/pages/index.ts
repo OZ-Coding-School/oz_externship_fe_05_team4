@@ -1,5 +1,4 @@
 export { default as MainPage } from './MainPage'
 export { default as NotFound } from './NotFound'
 export { default as DetailPage } from './DetailPage'
-export { default as CreatePage } from './CreatePage'
-export { default as EditPage } from './EditPage'
+export { default as CreatePage } from './QuestionCreate'
