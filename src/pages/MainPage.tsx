@@ -4,6 +4,8 @@ import { Pencil, Search, SlidersHorizontal } from 'lucide-react'
 
 import SortMenu from '@/components/questions/SortingMenu'
 import QuestionCard from '@/components/questions/QuestionCard'
+import profileImg from '@/assets/profile.png'
+import thumnailImg from '@/assets/Rectangle.png'
 
 export default function MainPage() {
   const [sort, setSort] = useState<'latest' | 'oldest'>('latest')
@@ -21,7 +23,7 @@ export default function MainPage() {
       thumbnail: null,
       author: {
         name: '김태산',
-        profile: 'https://cdn.ozcodingschool.com/profiles/user_123.png',
+        profile: profileImg,
       },
     },
     {
@@ -33,10 +35,10 @@ export default function MainPage() {
       answers: 1,
       views: 30,
       time: '1시간 전',
-      thumbnail: 'https://via.placeholder.com/200x120',
+      thumbnail: thumnailImg,
       author: {
         name: 'jnubugo',
-        profile: 'https://cdn.ozcodingschool.com/profiles/user_456.png',
+        profile: profileImg,
       },
     },
   ]
