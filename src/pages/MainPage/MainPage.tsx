@@ -6,9 +6,17 @@ import SortMenu from '@/components/questions/SortingMenu'
 import QuestionCard from '@/components/questions/QuestionCard'
 import profileImg from '@/assets/profile.png'
 import thumnailImg from '@/assets/Rectangle.png'
+import type { CategoryValue } from '@/components/filter'
+import CategoryFilter from '@/components/filter/CategoryFilter'
 
 export default function MainPage() {
   const [sort, setSort] = useState<'latest' | 'oldest'>('latest')
+  const [category, setCategory] = useState<CategoryValue>({
+    main: null,
+    middle: null,
+    sub: null,
+  })
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
 
   const questions = [
     {
@@ -77,12 +85,21 @@ export default function MainPage() {
 
       <section className="mt-6 flex items-center justify-end gap-8 text-sm">
         <SortMenu sort={sort} onChange={setSort} />
-        <button className="hover:text-gray-primary flex items-center gap-1 text-gray-600">
+
+        <button
+          className="hover:text-gray-primary flex items-center gap-1 text-gray-600"
+          onClick={() => setIsFilterOpen((prev) => !prev)}
+        >
           <SlidersHorizontal className="h-4 w-4" />
           필터
         </button>
       </section>
 
+      {isFilterOpen && (
+        <section className="mt-6">
+          <CategoryFilter value={category} onChange={setCategory} />
+        </section>
+      )}
       <section className="mt-8 space-y-6">
         {questions.map((q) => (
           <Link key={q.id} to={`/Question/Detail/${q.id}`}>
