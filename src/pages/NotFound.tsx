@@ -2,7 +2,7 @@ import React from 'react'
 import { useNavigate } from 'react-router'
 import NotFoundImg from '@/assets/404.png'
 
-import { Button } from '@/components/ui/Button'
+import { Button } from '@/components/ui'
 
 const NotFound: React.FC = () => {
   const navigate = useNavigate()
