@@ -7,7 +7,7 @@ interface Props {
 
 export default function ChatMessageList({ messages }: Props) {
   return (
-    <div className="space-y-3">
+    <div className="flex flex-col gap-4">
       {messages.map((msg) => (
         <ChatMessage key={msg.id} {...msg} />
       ))}
