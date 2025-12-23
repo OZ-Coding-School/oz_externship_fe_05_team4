@@ -1,7 +1,8 @@
 import { cn } from '@/lib/utils'
+import type { ChatRole } from '@/types'
 
 interface Props {
-  role: 'ai' | 'user'
+  role: ChatRole
   content: string
 }
 
@@ -14,7 +15,7 @@ export default function ChatMessage({ role, content }: Props) {
         'max-w-[80%] rounded-lg px-3 py-2 text-sm',
         isUser
           ? 'bg-primary ml-auto text-white'
-          : 'text-gray-primary bg-white shadow'
+          : 'bg-white text-gray-700 shadow'
       )}
     >
       {content}
