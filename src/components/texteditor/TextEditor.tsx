@@ -1,17 +1,18 @@
 import { EditorContent } from '@tiptap/react'
 import type { Editor } from '@tiptap/core'
 
-type TextEditorProps = {
+type Props = {
   editor: Editor | null
 }
 
-const TextEditor = ({ editor }: TextEditorProps) => {
+const TextEditor = ({ editor }: Props) => {
   if (!editor) return null
 
   return (
-    <div className="h-full">
-      <EditorContent editor={editor} />
-    </div>
+    <EditorContent
+      editor={editor}
+      className="prose max-w-none [&_ol]:pl-6 [&_ul]:list-disc [&_ul]:pl-6"
+    />
   )
 }
 

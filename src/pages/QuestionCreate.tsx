@@ -7,31 +7,28 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/Select'
+
 import { CATEGORY_DATA } from '@/data/Category'
-import StarterKit from '@tiptap/starter-kit'
-import { useEditor } from '@tiptap/react'
-import { MenuBar, TextEditor } from '@/components/texteditor'
+import { MenuBar, TextEditor, useTextEditor } from '@/components/texteditor'
 
 const QuestionCreate = () => {
-  const [mainCategory, setMainCategory] = useState<string>()
-  const [middleCategory, setMiddleCategory] = useState<string>()
-  const [subCategory, setSubCategory] = useState<string>()
   const [content, setContent] = useState('')
 
-  const editor = useEditor({
-    extensions: [StarterKit],
+  const editor = useTextEditor({
     content: '',
     onUpdate: ({ editor }) => {
       setContent(editor.getHTML())
     },
   })
 
-  const mainOptions = CATEGORY_DATA
+  const [mainCategory, setMainCategory] = useState<string>()
+  const [middleCategory, setMiddleCategory] = useState<string>()
+  const [subCategory, setSubCategory] = useState<string>()
 
+  const mainOptions = CATEGORY_DATA
   const middleOptions = mainCategory
     ? (CATEGORY_DATA.find((c) => c.name === mainCategory)?.subCategories ?? [])
     : []
-
   const subOptions = middleCategory
     ? (middleOptions.find((c) => c.name === middleCategory)?.items ?? [])
     : []
@@ -43,9 +40,9 @@ const QuestionCreate = () => {
       </h1>
       <div className="mb-6 h-[1px] w-full max-w-[944px] bg-[#CECECE]" />
 
+      {/* 카테고리 영역 */}
       <Card className="flex w-full max-w-[944px] flex-col gap-4 rounded-[20px] border px-[38px] py-10">
         <div className="flex w-full gap-[12px]">
-          {/* 대분류 */}
           <Select onValueChange={setMainCategory}>
             <SelectTrigger>
               <SelectValue placeholder="대분류 선택" />
@@ -59,7 +56,6 @@ const QuestionCreate = () => {
             </SelectContent>
           </Select>
 
-          {/* 중분류 */}
           <Select disabled={!mainCategory} onValueChange={setMiddleCategory}>
             <SelectTrigger>
               <SelectValue placeholder="중분류 선택" />
@@ -73,7 +69,6 @@ const QuestionCreate = () => {
             </SelectContent>
           </Select>
 
-          {/* 소분류 */}
           <Select
             value={subCategory}
             onValueChange={setSubCategory}
@@ -93,26 +88,27 @@ const QuestionCreate = () => {
         </div>
 
         <Input
-          className="h-[60px] w-full rounded-[4px] border bg-[#F7F2FF] px-[16px] py-[10px]"
+          className="h-[60px] w-full rounded-[4px] border bg-[#F7F2FF] px-[16px]"
           placeholder="제목을 입력하세요"
         />
       </Card>
 
+      {/* 에디터 */}
       <Card className="mt-5 flex min-h-[677px] w-full max-w-[944px] flex-col rounded-[20px]">
         <Card className="h-[80px] border-b">
           <MenuBar editor={editor} />
         </Card>
+
         <div className="flex flex-1 overflow-hidden">
           <div className="w-1/2 overflow-y-auto border-r p-4">
             <TextEditor editor={editor} />
           </div>
+
           <div className="w-1/2 overflow-y-auto bg-gray-50 p-4">
-            {editor && (
-              <div
-                className="prose max-w-full"
-                dangerouslySetInnerHTML={{ __html: editor.getHTML() }}
-              />
-            )}
+            <div
+              className="preview"
+              dangerouslySetInnerHTML={{ __html: content }}
+            />
           </div>
         </div>
       </Card>
