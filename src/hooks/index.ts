@@ -1,1 +1,1 @@
-//hooks
+export { useTextEditor } from './useTextEditor'
