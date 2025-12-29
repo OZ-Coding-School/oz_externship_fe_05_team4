@@ -66,7 +66,6 @@ export default function MainPage() {
     []
   )
   //필터링된 질문 목록
-  // 3️⃣ 검색 + 탭 필터 로직
   const filteredQuestions = useMemo(() => {
     const byTab =
       tab === 'answered'
@@ -101,6 +100,10 @@ export default function MainPage() {
   useEffect(() => {
     setPage(1)
   }, [tab])
+  //검색어 바뀌면 페이지 1로 초기화
+  useEffect(() => {
+    setPage(1)
+  }, [search])
 
   return (
     <main className="mx-auto w-full max-w-[1200px] px-6">
