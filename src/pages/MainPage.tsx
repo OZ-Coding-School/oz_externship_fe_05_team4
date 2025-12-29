@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router'
 import { Pencil, Search, SlidersHorizontal } from 'lucide-react'
 
@@ -9,14 +9,18 @@ import SortMenu from '@/components/questions/SortingMenu'
 import QuestionCard from '@/components/questions/QuestionCard'
 import CategoryFilterModal from '@/components/filter/CategoryFilterModal'
 import ChatbotFloatingButton from '@/components/chatbot/ChatbotFloatingButton'
+import QuestionPagination from '@/components/questions/QuestionPagination'
 
 import profileImg from '@/assets/profile.png'
 import thumnailImg from '@/assets/Rectangle.png'
 import type { CategoryValue } from '@/components/filter'
 
+const PAGE_SIZE = 5
+
 export default function MainPage() {
   const [sort, setSort] = useState<'latest' | 'oldest'>('latest')
   const [tab, setTab] = useState<QuestionTabValue>('all')
+  const [page, setPage] = useState(1)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [category, setCategory] = useState<CategoryValue>({
     main: null,
@@ -24,6 +28,7 @@ export default function MainPage() {
     sub: null,
   })
 
+  // 더미 질문 데이터 (고정)
   const questions = useMemo(
     () => [
       {
@@ -59,12 +64,28 @@ export default function MainPage() {
     ],
     []
   )
-
+  //필터링된 질문 목록
   const filteredQuestions = useMemo(() => {
-    if (tab === 'all') return questions
     if (tab === 'answered') return questions.filter((q) => q.answers > 0)
-    return questions.filter((q) => q.answers === 0)
+    if (tab === 'waiting') return questions.filter((q) => q.answers === 0)
+    return questions
   }, [tab, questions])
+
+  //총 페이지 수
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredQuestions.length / PAGE_SIZE)
+  )
+
+  const pagedQuestions = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE
+    return filteredQuestions.slice(start, start + PAGE_SIZE)
+  }, [filteredQuestions, page])
+
+  //탭 바뀌면 페이지 1로 초기화
+  useEffect(() => {
+    setPage(1)
+  }, [tab])
 
   return (
     <main className="mx-auto w-full max-w-[1200px] px-6">
@@ -113,11 +134,25 @@ export default function MainPage() {
       </section>
 
       <section className="mt-8 space-y-6">
-        {filteredQuestions.map((q) => (
-          <Link key={q.id} to={`/Question/Detail/${q.id}`}>
-            <QuestionCard {...q} />
-          </Link>
-        ))}
+        {pagedQuestions.length === 0 ? (
+          <div className="flex h-[200px] items-center justify-center text-sm text-gray-400">
+            해당 조건에 맞는 질문이 없습니다.
+          </div>
+        ) : (
+          pagedQuestions.map((q) => (
+            <Link key={q.id} to={`/Question/Detail/${q.id}`}>
+              <QuestionCard {...q} />
+            </Link>
+          ))
+        )}
+      </section>
+
+      <section className="mt-10 flex justify-center">
+        <QuestionPagination
+          page={page}
+          totalPages={totalPages}
+          onChange={setPage}
+        />
       </section>
 
       <ChatbotFloatingButton />

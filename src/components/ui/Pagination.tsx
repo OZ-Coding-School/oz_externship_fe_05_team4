@@ -1,15 +1,17 @@
-import * as React from 'react'
-import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react'
-
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui'
 
 function Pagination({ className, ...props }: React.ComponentProps<'nav'>) {
   return (
     <nav
       role="navigation"
       aria-label="pagination"
-      className={cn('mx-auto flex w-full justify-center', className)}
+      className={cn('flex justify-center', className)}
       {...props}
     />
   )
@@ -26,78 +28,85 @@ function PaginationItem(props: React.ComponentProps<'li'>) {
   return <li {...props} />
 }
 
-interface PaginationLinkProps {
-  isActive?: boolean
-  children: React.ReactNode
+interface PageButtonProps {
+  active?: boolean
+  disabled?: boolean
   onClick?: () => void
-  className?: string
+  children: React.ReactNode
 }
 
-function PaginationLink({
-  isActive,
-  className,
-  children,
-  onClick,
-}: PaginationLinkProps) {
+function PageButton({ active, disabled, onClick, children }: PageButtonProps) {
   return (
-    <Button
-      type="button"
-      variant={isActive ? 'outline' : 'ghost'}
-      className={cn(
-        'h-9 w-9 p-0',
-        isActive && 'border-primary bg-primary-50 text-primary',
-        className
-      )}
+    <button
       onClick={onClick}
+      disabled={disabled}
+      className={cn(
+        'flex h-9 w-9 items-center justify-center rounded-md text-sm',
+        'transition-colors',
+        active
+          ? 'bg-primary text-white'
+          : 'hover:bg-primary/10 hover:text-primary text-gray-400',
+        disabled && 'cursor-not-allowed opacity-40'
+      )}
     >
       {children}
-    </Button>
+    </button>
   )
 }
 
-function PaginationPrevious({
+function PaginationPrev({
+  disabled,
   onClick,
-  className,
 }: {
+  disabled?: boolean
   onClick?: () => void
-  className?: string
 }) {
   return (
-    <Button
-      type="button"
-      variant="ghost"
-      className={cn('h-9 px-3', className)}
-      onClick={onClick}
-    >
-      <ChevronLeft className="h-4 w-4" />
-    </Button>
+    <PageButton disabled={disabled} onClick={onClick}>
+      <ChevronLeft />
+    </PageButton>
   )
 }
 
 function PaginationNext({
+  disabled,
   onClick,
-  className,
 }: {
+  disabled?: boolean
   onClick?: () => void
-  className?: string
 }) {
   return (
-    <Button
-      type="button"
-      variant="ghost"
-      className={cn('h-9 px-3', className)}
-      onClick={onClick}
-    >
-      <ChevronRight className="h-4 w-4" />
-    </Button>
+    <PageButton disabled={disabled} onClick={onClick}>
+      <ChevronRight />
+    </PageButton>
   )
 }
 
-function PaginationEllipsis() {
+function PaginationFirst({
+  disabled,
+  onClick,
+}: {
+  disabled?: boolean
+  onClick?: () => void
+}) {
   return (
-    <span className="flex h-9 w-9 items-center justify-center text-gray-400">
-      <MoreHorizontal className="h-4 w-4" />
-    </span>
+    <PageButton disabled={disabled} onClick={onClick}>
+      <ChevronsLeft />
+    </PageButton>
+  )
+}
+
+function PaginationLast({
+  disabled,
+  onClick,
+}: {
+  disabled?: boolean
+  onClick?: () => void
+}) {
+  return (
+    <PageButton disabled={disabled} onClick={onClick}>
+      <ChevronsRight />
+    </PageButton>
   )
 }
 
@@ -105,8 +114,9 @@ export {
   Pagination,
   PaginationContent,
   PaginationItem,
-  PaginationLink,
-  PaginationPrevious,
+  PaginationPrev,
   PaginationNext,
-  PaginationEllipsis,
+  PaginationFirst,
+  PaginationLast,
+  PageButton,
 }

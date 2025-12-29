@@ -2,44 +2,63 @@ import {
   Pagination,
   PaginationContent,
   PaginationItem,
-  PaginationLink,
+  PaginationFirst,
+  PaginationLast,
+  PaginationPrev,
   PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination'
+  PageButton,
+} from '@/components/ui'
 
-export default function QuestionPagination() {
+interface Props {
+  page: number
+  totalPages: number
+  onChange: (page: number) => void
+}
+
+export default function QuestionPagination({
+  page,
+  totalPages,
+  onChange,
+}: Props) {
+  if (totalPages <= 1) return null
+
   return (
     <Pagination>
-      <PaginationContent className="gap-2">
-        {/* 이전 */}
+      <PaginationContent>
         <PaginationItem>
-          <PaginationPrevious className="rounded-md border text-gray-400 hover:text-gray-600" />
-        </PaginationItem>
-
-        {/* 페이지 번호 */}
-        <PaginationItem>
-          <PaginationLink
-            isActive
-            className="border-primary bg-primary-50 text-primary rounded-md border"
-          >
-            1
-          </PaginationLink>
+          <PaginationFirst disabled={page === 1} onClick={() => onChange(1)} />
         </PaginationItem>
 
         <PaginationItem>
-          <PaginationLink className="rounded-md border text-gray-500 hover:text-gray-700">
-            2
-          </PaginationLink>
+          <PaginationPrev
+            disabled={page === 1}
+            onClick={() => onChange(page - 1)}
+          />
+        </PaginationItem>
+
+        {Array.from({ length: totalPages }).map((_, i) => {
+          const p = i + 1
+          return (
+            <PaginationItem key={p}>
+              <PageButton active={p === page} onClick={() => onChange(p)}>
+                {p}
+              </PageButton>
+            </PaginationItem>
+          )
+        })}
+
+        <PaginationItem>
+          <PaginationNext
+            disabled={page === totalPages}
+            onClick={() => onChange(page + 1)}
+          />
         </PaginationItem>
 
         <PaginationItem>
-          <PaginationLink className="rounded-md border text-gray-500 hover:text-gray-700">
-            3
-          </PaginationLink>
-        </PaginationItem>
-
-        <PaginationItem>
-          <PaginationNext className="rounded-md border text-gray-500 hover:text-gray-700" />
+          <PaginationLast
+            disabled={page === totalPages}
+            onClick={() => onChange(totalPages)}
+          />
         </PaginationItem>
       </PaginationContent>
     </Pagination>
