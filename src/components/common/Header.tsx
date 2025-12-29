@@ -30,8 +30,8 @@ export default function Header() {
             <Link to="/community" className="hover:text-black">
               커뮤니티
             </Link>
-            <Link to="/questions" className="hover:text-black">
-              질문응답
+            <Link to="/" className="hover:text-black">
+              질의응답
             </Link>
           </nav>
         </div>
