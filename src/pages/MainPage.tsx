@@ -24,6 +24,7 @@ export default function MainPage() {
   const [page, setPage] = useState(1)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [search, setSearch] = useState('')
+  const [isFocused, setIsFocused] = useState(false)
   const [category, setCategory] = useState<CategoryValue>({
     main: null,
     middle: null,
@@ -114,9 +115,7 @@ export default function MainPage() {
         <div
           className={cn(
             'relative flex h-[56px] w-[720px] items-center rounded-full border-2 bg-white transition',
-            search
-              ? 'border-primary'
-              : 'focus-within:border-primary border-gray-200'
+            isFocused ? 'border-primary' : 'border-gray-200'
           )}
         >
           <Search className="ml-6 h-5 w-5 text-gray-400" />
@@ -124,12 +123,16 @@ export default function MainPage() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
             placeholder="질문 검색"
             className="flex-1 bg-transparent px-4 text-[15px] text-gray-900 outline-none placeholder:text-gray-400"
           />
 
-          {search && (
+          {isFocused && search && (
             <button
+              type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => setSearch('')}
               className="mr-4 flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-white hover:bg-gray-400"
               aria-label="clear search"
