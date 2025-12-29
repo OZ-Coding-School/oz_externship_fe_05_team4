@@ -179,7 +179,7 @@ export default function MainPage() {
         ) : (
           pagedQuestions.map((q) => (
             <Link key={q.id} to={`/Question/Detail/${q.id}`}>
-              <QuestionCard {...q} />
+              <QuestionCard {...q} searchKeyword={search} />
             </Link>
           ))
         )}

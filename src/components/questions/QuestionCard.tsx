@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils'
+import { highlightText } from '@/lib/highlight'
 
 interface QuestionCardProps {
   id: number
@@ -13,6 +14,7 @@ interface QuestionCardProps {
     name: string
     profile: string
   }
+  searchKeyword?: string
 }
 
 export default function QuestionCard({
@@ -24,6 +26,7 @@ export default function QuestionCard({
   time,
   thumbnail,
   author,
+  searchKeyword = '',
 }: QuestionCardProps) {
   return (
     <article className="flex w-full cursor-pointer justify-between border-b border-gray-200 py-5 transition-colors hover:bg-gray-50">
@@ -47,11 +50,11 @@ export default function QuestionCard({
         </div>
 
         <h2 className="mb-2 text-[16px] leading-[22px] font-semibold text-gray-900">
-          {title}
+          {searchKeyword ? highlightText(title, searchKeyword) : title}
         </h2>
 
         <p className="line-clamp-2 text-[14px] leading-[20px] text-gray-600">
-          {preview}
+          {searchKeyword ? highlightText(preview, searchKeyword) : preview}
         </p>
 
         <div className="mt-3 flex items-center gap-4 text-[12px] text-gray-500">
