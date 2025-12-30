@@ -1,7 +1,12 @@
-import type { Question } from '@/types'
-import { QUESTIONS_MOCK } from '@/mocks/questions.mock'
+import axios from 'axios'
+import type { QnaListResponse } from '@/types/question'
 
-export async function fetchQuestions(): Promise<Question[]> {
-  //더미
-  return QUESTIONS_MOCK
+const BASE_URL = 'https://api.ozcodingschool.site'
+
+export async function fetchQnaQuestions(): Promise<QnaListResponse> {
+  const res = await axios.get<QnaListResponse>(
+    `${BASE_URL}/api/v1/qna/questions`
+  )
+
+  return res.data
 }
