@@ -9,7 +9,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from './lib/queryClient.ts'
 
 async function enableMocking() {
-  if (process.env.NODE_ENV !== 'development') {
+  if (!import.meta.env.DEV) {
     return
   }
   const { worker } = await import('./mocks/browser.ts') // 이전에 설정한 브라우저 환경설정 import
