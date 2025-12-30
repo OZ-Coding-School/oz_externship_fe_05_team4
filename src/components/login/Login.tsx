@@ -7,25 +7,20 @@ import {
 } from '@/components/ui/Select'
 import { Button } from '../ui'
 import { useState } from 'react'
-import { logIn } from '@/api/auth.api'
-import { useMutation } from '@tanstack/react-query'
+import { useLogin } from '@/hooks/useLogin'
 
 const Login = () => {
   const [selectedNum, setSelectedNum] = useState<string>('')
   const numArr = Array.from({ length: 10 }, (_, index) => index + 1)
 
-  const { mutate } = useMutation({
-    mutationFn: logIn,
-    onSuccess: (data) => {
-      console.log(data)
-    },
-    onError: (error) => {
-      console.error('로그인 실패', error)
-    },
-  })
+  // loginMutation.isPending
+  // loginMutation.isError
+  // loginMutation.error
+  // 이런 것들로 로딩 스피너 또는 에러 메세지 처리하기
+  const loginMutation = useLogin()
 
   const handleLogin = () => {
-    mutate({
+    loginMutation.mutate({
       email: `testuser${selectedNum}@ozcodingschool.site`,
       password: 'Ozcoding1234@',
     })
