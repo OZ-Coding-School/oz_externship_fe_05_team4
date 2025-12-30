@@ -4,15 +4,15 @@ import { CATEGORY_DATA } from '@/data/Category'
 import CategorySelectGroup from '@/components/category/CategorySelectGroup'
 import { MenuBar, TextEditor } from '@/components/texteditor'
 import { useTextEditor } from '@/hooks'
-import { useAuthStore } from '@/store'
 import { useQuestionCreate } from '@/hooks/useQuestionCreate'
+import { useAuthStore } from '@/store'
 
 const QuestionCreate = () => {
   const [content, setContent] = useState('')
   const [title, setTitle] = useState('')
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated())
 
-  const token = useAuthStore((state) => state.token)
-  const { mutate, isPending } = useQuestionCreate(token ?? '')
+  const { mutate, isPending } = useQuestionCreate()
 
   const editor = useTextEditor({
     content: '',
@@ -64,7 +64,7 @@ const QuestionCreate = () => {
   const handleSubmit = () => {
     const categoryId = getSelectedCategoryId()
 
-    if (!token) {
+    if (!isAuthenticated) {
       alert('로그인이 필요합니다.')
       return
     }
