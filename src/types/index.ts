@@ -1,2 +1,3 @@
-// types
-export * from './types'
+export * from './question'
+export * from './category'
+export * from './chat'
