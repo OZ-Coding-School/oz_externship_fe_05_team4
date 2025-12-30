@@ -40,4 +40,13 @@ const fetchMe = async (): Promise<User> => {
   return userResponse.data
 }
 
+// TODO: 로그아웃 API가 있는게 맞음 (혹시 구현하지 않는것으로 결정되면 삭제), 구현할 경우 import & export도 추가, LOG_OUT_URL도 추가
+// const logOut = async (): Promise<void> => {
+//   await axios.post(LOG_OUT_URL, {
+//     headers: {
+//       Authorization: `Bearer ${token.get()}`,
+//     },
+//   })
+// }
+
 export { logIn, fetchMe }
