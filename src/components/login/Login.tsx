@@ -7,13 +7,23 @@ import {
 } from '@/components/ui/Select'
 import { Button } from '../ui'
 import { useState } from 'react'
+import { logIn } from '@/api/auth'
 
 const Login = () => {
   const [selectedNum, setSelectedNum] = useState<string>('')
   const numArr = Array.from({ length: 10 }, (_, index) => index + 1)
 
   const handleLogin = () => {
-    console.log(selectedNum)
+    logIn({
+      email: `testuser${selectedNum}@ozcodingschool.site`,
+      password: 'Ozcoding1234@',
+    })
+      .then((data) => {
+        console.log(data)
+      })
+      .catch((error) => {
+        console.error('로그인 실패', error)
+      })
   }
 
   return (
