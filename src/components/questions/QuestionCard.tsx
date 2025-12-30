@@ -36,11 +36,7 @@ export default function QuestionCard({
             const isLast = index === categories.length - 1
             return (
               <span key={`${category}-${index}`} className="flex items-center">
-                <span
-                  className={
-                    isLast ? 'text-primary underline underline-offset-2' : ''
-                  }
-                >
+                <span className={isLast ? 'underline underline-offset-2' : ''}>
                   {category}
                 </span>
                 {!isLast && <span className="mx-1 text-gray-400">›</span>}
