@@ -1,6 +1,6 @@
-import { logIn } from '@/api/auth.api'
-import { useAuthStore } from '@/store/auth.store'
-import type { User } from '@/types/user'
+import { logIn } from '@/api/index'
+import { useAuthStore } from '@/store/index'
+import type { User } from '@/types/index'
 import { useMutation } from '@tanstack/react-query'
 
 interface LoginPayload {

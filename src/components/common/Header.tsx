@@ -9,8 +9,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/DropdownMenu'
 import profileImg from '@/assets/profile.png'
-import Login from '../login/Login'
-import { useAuthStore } from '@/store/auth.store'
+import Login from '@/components/login/Login'
+import { useAuthStore } from '@/store/index'
 
 export default function Header() {
   // 로그인 여부 확인은 이렇게 사용하시면 좋아요!

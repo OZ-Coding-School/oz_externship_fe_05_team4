@@ -1,5 +1,5 @@
-import { LOG_IN_URL, USER_URL } from '@/data'
-import { token } from '@/lib/auth.token'
+import { LOG_IN_URL, USER_URL } from '@/data/index'
+import { token } from '@/lib/index'
 import type { User } from '@/types/user'
 import axios from 'axios'
 
