@@ -2,7 +2,7 @@ import { ArrowUpDown, MessageCircle } from 'lucide-react'
 import { Avatar } from '@radix-ui/react-avatar'
 import { Button, Card, Textarea } from '../ui'
 
-export default function JaeminCard() {
+export default function Detailpage() {
   return (
     <div className="px-4 py-8">
       <Card className="my-8">
@@ -25,7 +25,7 @@ export default function JaeminCard() {
             <p className="py-9 text-sm text-gray-700">
               동해물과 백두산이 마르고 닳도록
             </p>
-            <div></div>
+
             <div className="text-right text-sm text-gray-400">
               11 시간 전
               <div className="">
@@ -50,10 +50,13 @@ export default function JaeminCard() {
 
                   <h2 className="pl-1 font-semibold">댓글 1개 </h2>
                 </div>
-                <button className="flex items-center text-sm text-gray-600">
+                <Button
+                  variant="ghost"
+                  className="cursor-pointer text-gray-600"
+                >
                   최신순
                   <ArrowUpDown className="h-4 w-4" />
-                </button>
+                </Button>
               </div>
               <div className="flex space-x-3 border-gray-50 py-4">
                 <Avatar className="h-10 w-10 shrink-0 rounded-full bg-purple-200" />
