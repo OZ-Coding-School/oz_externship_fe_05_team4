@@ -43,14 +43,15 @@ export default function MainPage() {
 
   /*렌더*/
   return (
-    <main className="mx-auto w-full max-w-[1200px] px-6">
+    <main className="mx-auto w-full max-w-[960px] px-6">
       <h1 className="pt-8 text-2xl font-bold text-gray-900">질의응답</h1>
 
       {/*검색 + 질문하기*/}
       <section className="mt-6 flex items-center gap-4">
         <SearchBar value={search} onChange={setSearch} />
 
-        <Link to="/Question/Create">
+        <Link to="/Question/Create" className="ml-auto">
+          {/* 질문하기 버튼 */}
           <button className="bg-primary hover:bg-primary-400 flex h-10 items-center gap-2 rounded-md px-6 text-sm font-semibold text-white">
             <Pencil className="h-4 w-4" />
             질문하기
