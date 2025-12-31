@@ -1,4 +1,4 @@
-import { LOG_IN_URL, USER_URL } from '@/data/index'
+import { LOG_IN_URL, REFRESH_ACCESS_TOKEN_URL, USER_URL } from '@/data/index'
 import { token } from '@/lib/index'
 import type { User } from '@/types/user'
 import axios from 'axios'
@@ -12,7 +12,8 @@ const logIn = async (payload: LoginPayload): Promise<User> => {
   // access token 발급
   const tokenResponse = await axios.post<{ access_token: string }>(
     LOG_IN_URL,
-    payload
+    payload,
+    { withCredentials: true }
   )
   const { access_token: accessToken } = tokenResponse.data
   token.set(accessToken)
@@ -22,13 +23,16 @@ const logIn = async (payload: LoginPayload): Promise<User> => {
 }
 
 // TODO: Axios 인스턴스 구현 & API 오류 수정 후에 주석 해제 (리프레시 토큰은 헤더로 받기), import & export도 추가
-// const refreshAccessToken = async (): Promise<string> => {
-//   const tokenResponse = await api.post<{ access_token: string }>(
-//     REFRESH_ACCESS_TOKEN_URL
-//   )
-//   const { access_token: accessToken } = tokenResponse.data
-//   return accessToken
-// }
+const refreshAccessToken = async (): Promise<string> => {
+  const tokenResponse = await axios.post<{ access_token: string }>(
+    REFRESH_ACCESS_TOKEN_URL,
+    // '/api/accounts/refresh',
+    {},
+    { withCredentials: true }
+  )
+  const { access_token: accessToken } = tokenResponse.data
+  return accessToken
+}
 
 // TODO: Axios 인스턴스 추가 후 리팩토링
 const fetchMe = async (): Promise<User> => {
@@ -36,6 +40,7 @@ const fetchMe = async (): Promise<User> => {
     headers: {
       Authorization: `Bearer ${token.get()}`,
     },
+    withCredentials: true,
   })
   return userResponse.data
 }
@@ -49,4 +54,4 @@ const fetchMe = async (): Promise<User> => {
 //   })
 // }
 
-export { logIn, fetchMe }
+export { logIn, refreshAccessToken, fetchMe }
