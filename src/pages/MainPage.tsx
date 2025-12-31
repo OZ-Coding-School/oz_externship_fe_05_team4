@@ -11,9 +11,10 @@ import QuestionPagination from '@/components/questions/QuestionPagination'
 import CategoryFilterModal from '@/components/filter/CategoryFilterModal'
 import ChatbotFloatingButton from '@/components/chatbot/ChatbotFloatingButton'
 
-import type { CategoryValue } from '@/components/filter'
 import { useQuestions } from '@/hooks/useQuestions'
 import { useSessionState } from '@/hooks/useSessionState'
+import { useEffect } from 'react'
+import type { CategoryValue } from '@/types'
 
 export default function MainPage() {
   const [tab, setTab] = useSessionState<QuestionTabValue>('qna-tab', 'all')
@@ -37,6 +38,10 @@ export default function MainPage() {
       sub: null,
     }
   )
+
+  useEffect(() => {
+    setPage(1)
+  }, [category, tab, search, sort, setPage])
 
   /*데이터*/
   const { questions, totalPages, isLoading, isError } = useQuestions(

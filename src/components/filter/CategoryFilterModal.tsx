@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import type { CategoryValue } from '@/components/filter'
 import CategoryFilter from '@/components/filter/CategoryFilter'
+import type { CategoryValue } from '@/types'
 
 interface Props {
   value: CategoryValue
