@@ -41,7 +41,7 @@ export interface Question {
   answers: number
   views: number
   time: string
-  isAnswered: boolean
+  isAnswered: boolean //answer_count > 0 기준
   author: {
     name: string
     profile: string | null
@@ -49,4 +49,7 @@ export interface Question {
 }
 
 //탭 상태 (UI 상태)
-export type QuestionTab = 'all' | 'answered' | 'unanswered'
+export type QuestionTab = 'all' | 'answered' | 'waiting'
+
+//API answer_status 파라미터
+export type AnswerStatus = 'answered' | 'unanswered'

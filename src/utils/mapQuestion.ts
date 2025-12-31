@@ -1,4 +1,5 @@
-import type { QnaQuestion, Question } from '@/types'
+import type { QnaQuestion, Question } from '@/types/question'
+import { timeAgo } from '@/utils/date'
 
 export function mapQuestion(q: QnaQuestion): Question {
   return {
@@ -8,7 +9,7 @@ export function mapQuestion(q: QnaQuestion): Question {
     preview: q.content_preview,
     answers: q.answer_count,
     views: q.view_count,
-    time: q.created_at,
+    time: timeAgo(q.created_at),
     isAnswered: q.answer_count > 0,
     author: {
       name: q.author.nickname,
