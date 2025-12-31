@@ -8,15 +8,10 @@ import { useQuestionCreate } from '@/hooks/useQuestionCreate'
 import { useAuthStore } from '@/store'
 
 const QuestionCreate = () => {
-  const [form, setForm] = useState({
-    title: '',
-    content: '',
-    categoryId: null as number | null,
-  })
+  // 로그인 확인
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated())
 
-  const { mutate, isPending } = useQuestionCreate()
-
+  // 텍스트에디터
   const editor = useTextEditor({
     content: '',
     onUpdate: ({ editor }) => {
@@ -24,6 +19,7 @@ const QuestionCreate = () => {
     },
   })
 
+  // 카테고리
   const [mainCategory, setMainCategory] = useState<string>('')
   const [middleCategory, setMiddleCategory] = useState<string>('')
   const [subCategory, setSubCategory] = useState<string>('')
@@ -63,6 +59,14 @@ const QuestionCreate = () => {
 
     return Number(sub.id)
   }
+  // 질문 등록 처리
+  const [form, setForm] = useState({
+    title: '',
+    content: '',
+    categoryId: null as number | null,
+  })
+
+  const { mutate, isPending } = useQuestionCreate()
 
   const handleSubmit = () => {
     const categoryId = getSelectedCategoryId()
@@ -84,6 +88,8 @@ const QuestionCreate = () => {
       alert('내용을 입력해주세요.')
       return
     }
+
+    // 서버로 질문데이터 전송
     mutate({
       title: form.title,
       content: form.content,
