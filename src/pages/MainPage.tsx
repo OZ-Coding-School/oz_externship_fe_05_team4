@@ -39,7 +39,13 @@ export default function MainPage() {
   )
 
   /*데이터*/
-  const { questions, totalPages } = useQuestions(page)
+  const { questions, totalPages, isLoading, isError } = useQuestions(
+    page,
+    search,
+    sort,
+    tab,
+    category
+  )
 
   /*렌더*/
   return (
@@ -87,17 +93,31 @@ export default function MainPage() {
 
       {/*질문 리스트*/}
       <section className="mt-8 space-y-6">
-        {questions.length === 0 ? (
-          <div className="flex h-[200px] items-center justify-center text-sm text-gray-400">
+        {isLoading && (
+          <div className="py-20 text-center text-sm text-gray-400">
+            질문 목록을 불러오는 중입니다…
+          </div>
+        )}
+
+        {isError && (
+          <div className="py-20 text-center text-sm text-red-500">
+            질문 목록을 불러오지 못했습니다.
+          </div>
+        )}
+
+        {!isLoading && !isError && questions.length === 0 && (
+          <div className="py-20 text-center text-sm text-gray-400">
             해당 조건에 맞는 질문이 없습니다.
           </div>
-        ) : (
+        )}
+
+        {!isLoading &&
+          !isError &&
           questions.map((q) => (
             <Link key={q.id} to={`/Question/Detail/${q.id}`}>
               <QuestionCard {...q} searchKeyword={search} />
             </Link>
-          ))
-        )}
+          ))}
       </section>
 
       {/*페이지네이션*/}
