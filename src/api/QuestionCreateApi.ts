@@ -19,9 +19,8 @@ export const QuestionCreateApi = async (
       title: payload.title,
       content: payload.content,
       // TODO: 카테고리 수정이후 주석 돌리기.
-      // category: payload.category,
-      category: 1,
-      image_urls: payload.imageUrls,
+      category: payload.category,
+      // category: 1,
     },
     {
       headers: {

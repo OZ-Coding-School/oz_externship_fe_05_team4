@@ -2,7 +2,6 @@ export interface QuestionCreate {
   title: string
   content: string
   category: number
-  imageUrls: string[]
 }
 
 export interface QuestionCreateResponse {
