@@ -7,11 +7,11 @@ import type {
 } from '@/types'
 import { QuestionCreateApi } from '@/api/QuestionCreateApi'
 
-export const useQuestionCreate = (token: string) =>
+export const useQuestionCreate = () =>
   useMutation<
     QuestionCreateResponse,
     AxiosError<QuestionCreateErrorResponse>,
     QuestionCreate
   >({
-    mutationFn: (payload) => QuestionCreateApi(payload, token),
+    mutationFn: (payload) => QuestionCreateApi(payload),
   })

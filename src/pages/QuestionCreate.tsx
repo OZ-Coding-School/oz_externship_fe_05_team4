@@ -4,23 +4,22 @@ import { CATEGORY_DATA } from '@/data/Category'
 import CategorySelectGroup from '@/components/category/CategorySelectGroup'
 import { MenuBar, TextEditor } from '@/components/texteditor'
 import { useTextEditor } from '@/hooks'
-import { useAuthStore } from '@/store'
 import { useQuestionCreate } from '@/hooks/useQuestionCreate'
+import { useAuthStore } from '@/store'
 
 const QuestionCreate = () => {
-  const [content, setContent] = useState('')
-  const [title, setTitle] = useState('')
+  // 로그인 확인
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated())
 
-  const token = useAuthStore((state) => state.token)
-  const { mutate, isPending } = useQuestionCreate(token ?? '')
-
+  // 텍스트에디터
   const editor = useTextEditor({
     content: '',
     onUpdate: ({ editor }) => {
-      setContent(editor.getHTML())
+      setForm((prev) => ({ ...prev, content: editor.getHTML() }))
     },
   })
 
+  // 카테고리
   const [mainCategory, setMainCategory] = useState<string>('')
   const [middleCategory, setMiddleCategory] = useState<string>('')
   const [subCategory, setSubCategory] = useState<string>('')
@@ -60,16 +59,24 @@ const QuestionCreate = () => {
 
     return Number(sub.id)
   }
+  // 질문 등록 처리
+  const [form, setForm] = useState({
+    title: '',
+    content: '',
+    categoryId: null as number | null,
+  })
+
+  const { mutate, isPending } = useQuestionCreate()
 
   const handleSubmit = () => {
     const categoryId = getSelectedCategoryId()
 
-    if (!token) {
+    if (!isAuthenticated) {
       alert('로그인이 필요합니다.')
       return
     }
 
-    if (!title.trim()) {
+    if (!form.title.trim()) {
       alert('제목을 입력해주세요.')
       return
     }
@@ -77,15 +84,16 @@ const QuestionCreate = () => {
       alert('카테고리를 선택해주세요.')
       return
     }
-    if (!content.trim()) {
+    if (!form.content.trim()) {
       alert('내용을 입력해주세요.')
       return
     }
+
+    // 서버로 질문데이터 전송
     mutate({
-      title,
-      content,
+      title: form.title,
+      content: form.content,
       category: categoryId,
-      imageUrls: [],
     })
   }
 
@@ -124,8 +132,11 @@ const QuestionCreate = () => {
         </div>
 
         <Input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          name="title"
+          value={form.title}
+          onChange={(e) =>
+            setForm((prev) => ({ ...prev, title: e.target.value }))
+          }
           className="h-[60px] w-full rounded-[4px] border border-[#ECECEC] bg-[#F7F2FF] px-[16px] py-[10px]"
           placeholder="제목을 입력하세요"
         />
@@ -145,7 +156,7 @@ const QuestionCreate = () => {
             <div className="w-1/2 overflow-y-auto bg-[#FAFAFB] p-4">
               <div
                 className="preview"
-                dangerouslySetInnerHTML={{ __html: content }}
+                dangerouslySetInnerHTML={{ __html: form.content }}
               />
             </div>
           </div>
