@@ -2,7 +2,11 @@ import { cn } from '@/lib/utils'
 import type { ChatMessageType } from '@/types'
 import botImage from '@/assets/chatbot.png'
 
-export default function ChatMessage({ role, content }: ChatMessageType) {
+export default function ChatMessage({
+  role,
+  content,
+  status,
+}: ChatMessageType) {
   const isUser = role === 'user'
 
   return (
@@ -13,7 +17,7 @@ export default function ChatMessage({ role, content }: ChatMessageType) {
         <img
           src={botImage}
           alt="AI"
-          className="mt-1 mr-2 h-8 w-8 shrink-0 rounded-full"
+          className="mr-2 h-8 w-8 shrink-0 rounded-full"
         />
       )}
 
@@ -23,7 +27,17 @@ export default function ChatMessage({ role, content }: ChatMessageType) {
           isUser ? 'bg-primary text-white' : 'bg-gray-100 text-gray-800'
         )}
       >
-        {content}
+        {status === 'loading' && (
+          <span className="animate-pulse text-gray-400">
+            AI가 답변을 작성 중입니다…
+          </span>
+        )}
+
+        {status === 'error' && (
+          <span className="text-red-500">답변을 불러오지 못했습니다.</span>
+        )}
+
+        {!status && content}
       </div>
     </div>
   )
