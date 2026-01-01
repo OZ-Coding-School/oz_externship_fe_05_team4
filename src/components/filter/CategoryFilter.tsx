@@ -2,12 +2,7 @@ import { useState } from 'react'
 import { Check, ChevronDown } from 'lucide-react'
 import { CATEGORY_DATA } from '@/data'
 import { cn } from '@/lib/utils'
-
-export interface CategoryValue {
-  main: string | null
-  middle: string | null
-  sub: string | null
-}
+import type { CategoryValue } from '@/types/category'
 
 interface Props {
   value: CategoryValue
@@ -16,34 +11,36 @@ interface Props {
 
 export default function CategoryFilter({ value, onChange }: Props) {
   const mainOptions = CATEGORY_DATA
+
   const middleOptions = value.main
-    ? (CATEGORY_DATA.find((c) => c.name === value.main)?.subCategories ?? [])
+    ? (CATEGORY_DATA.find((c) => c.id === value.main?.id)?.subCategories ?? [])
     : []
+
   const subOptions = value.middle
-    ? (middleOptions.find((c) => c.name === value.middle)?.items ?? [])
+    ? (middleOptions.find((c) => c.id === value.middle?.id)?.items ?? [])
     : []
 
   return (
     <div className="space-y-4">
       <Dropdown
-        label="대분류 선택"
+        placeholder="대분류 선택"
         value={value.main}
-        options={mainOptions.map((c) => c.name)}
+        options={mainOptions}
         onSelect={(v) => onChange({ main: v, middle: null, sub: null })}
       />
 
       <Dropdown
-        label="중분류 선택"
+        placeholder="중분류 선택"
         value={value.middle}
-        options={middleOptions.map((c) => c.name)}
+        options={middleOptions}
         disabled={!value.main}
         onSelect={(v) => onChange({ ...value, middle: v, sub: null })}
       />
 
       <Dropdown
-        label="소분류 선택"
+        placeholder="소분류 선택"
         value={value.sub}
-        options={subOptions.map((c) => c.name)}
+        options={subOptions}
         disabled={!value.middle}
         onSelect={(v) => onChange({ ...value, sub: v })}
       />
@@ -51,58 +48,51 @@ export default function CategoryFilter({ value, onChange }: Props) {
   )
 }
 
-interface DropdownProps {
-  label: string
-  value: string | null
-  options: string[]
+interface DropdownProps<T extends { id: number; name: string }> {
+  placeholder: string
+  value: T | null
+  options: T[]
   disabled?: boolean
-  onSelect: (v: string) => void
+  onSelect: (v: T) => void
 }
 
-function Dropdown({
-  label,
+function Dropdown<T extends { id: number; name: string }>({
+  placeholder,
   value,
   options,
   disabled,
   onSelect,
-}: DropdownProps) {
+}: DropdownProps<T>) {
   const [open, setOpen] = useState(false)
 
   return (
-    <div
-      className={cn(
-        'border',
-        open ? 'border-primary' : 'border-gray-200',
-        disabled && 'bg-gray-250 border-gray-200',
-        'rounded-md'
-      )}
-    >
+    <div className="relative">
       <button
         type="button"
         disabled={disabled}
-        onClick={() => {
-          if (disabled) return
-          setOpen((p) => !p)
-        }}
+        onClick={() => !disabled && setOpen((p) => !p)}
         className={cn(
-          'flex h-12 w-full items-center justify-between px-4 text-sm',
-          open ? 'rounded-t-md' : 'rounded-md',
+          'flex h-12 w-full items-center justify-between rounded-md border px-4 text-sm',
           disabled
-            ? 'text-gray-disabled [&_svg]:text-gray-disabled cursor-not-allowed'
-            : 'text-gray-primary bg-white'
+            ? 'text-gray-disabled border-gray-200 bg-gray-100'
+            : 'text-gray-primary border-gray-300 bg-white'
         )}
       >
-        <span className={cn(!value && 'text-gray-400')}>{value ?? label}</span>
-        <ChevronDown className="h-4 w-4 text-gray-500" />
+        <span className={cn(!value && 'text-gray-400')}>
+          {value?.name ?? placeholder}
+        </span>
+        <ChevronDown
+          className={cn('h-4 w-4 transition-transform', open && 'rotate-180')}
+        />
       </button>
 
       {open && (
-        <ul className="max-h-56 overflow-auto rounded-b-md bg-white">
+        <ul className="absolute z-10 mt-1 max-h-40 w-full overflow-y-auto rounded-md border bg-white shadow">
           {options.map((opt) => {
-            const selected = value === opt
+            const selected = value?.id === opt.id
             return (
               <li
-                key={opt}
+                key={opt.id}
                 onClick={() => {
                   onSelect(opt)
                   setOpen(false)
@@ -113,7 +103,7 @@ function Dropdown({
                   selected && 'bg-primary-50 text-primary font-medium'
                 )}
               >
-                {opt}
+                {opt.name}
                 {selected && <Check className="text-primary h-4 w-4" />}
               </li>
             )

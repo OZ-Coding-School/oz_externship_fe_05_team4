@@ -11,9 +11,10 @@ import QuestionPagination from '@/components/questions/QuestionPagination'
 import CategoryFilterModal from '@/components/filter/CategoryFilterModal'
 import ChatbotFloatingButton from '@/components/chatbot/ChatbotFloatingButton'
 
-import type { CategoryValue } from '@/components/filter'
 import { useQuestions } from '@/hooks/useQuestions'
 import { useSessionState } from '@/hooks/useSessionState'
+import { useEffect } from 'react'
+import type { CategoryValue } from '@/types'
 
 export default function MainPage() {
   const [tab, setTab] = useSessionState<QuestionTabValue>('qna-tab', 'all')
@@ -38,6 +39,10 @@ export default function MainPage() {
     }
   )
 
+  useEffect(() => {
+    setPage(1)
+  }, [category, tab, search, sort, setPage])
+
   /*데이터*/
   const { questions, totalPages, isLoading, isError } = useQuestions(
     page,
@@ -52,12 +57,13 @@ export default function MainPage() {
     <main className="mx-auto w-full max-w-[960px] px-6">
       <h1 className="pt-8 text-2xl font-bold text-gray-900">질의응답</h1>
 
-      {/*검색 + 질문하기*/}
-      <section className="mt-6 flex items-center gap-4">
-        <SearchBar value={search} onChange={setSearch} />
+      {/* 검색 + 질문하기 */}
+      <section className="mt-6 flex items-center justify-between gap-6">
+        <div className="max-w-[640px] flex-1">
+          <SearchBar value={search} onChange={setSearch} />
+        </div>
 
-        <Link to="/Question/Create" className="ml-auto">
-          {/* 질문하기 버튼 */}
+        <Link to="/Question/Create">
           <button className="bg-primary hover:bg-primary-400 flex h-10 items-center gap-2 rounded-md px-6 text-sm font-semibold text-white">
             <Pencil className="h-4 w-4" />
             질문하기
@@ -65,30 +71,22 @@ export default function MainPage() {
         </Link>
       </section>
 
-      {/*탭*/}
-      <section className="mt-10 border-b border-gray-200">
+      {/* 탭 + 정렬/필터 */}
+      <section className="mt-10 flex items-end justify-between border-b border-gray-200">
         <QuestionStatusTabs value={tab} onChange={setTab} />
-      </section>
 
-      {/*정렬 + 필터*/}
-      <section className="relative mt-6 flex items-center justify-end gap-8 text-sm">
-        <SortMenu sort={sort} onChange={setSort} />
+        {/* Sort + Filter */}
+        <div className="mb-2 flex items-center gap-6 text-sm text-gray-700">
+          <SortMenu sort={sort} onChange={setSort} />
 
-        <button
-          onClick={() => setIsFilterOpen(true)}
-          className="flex items-center gap-1 text-gray-700 hover:text-gray-900"
-        >
-          <SlidersHorizontal className="h-4 w-4" />
-          필터
-        </button>
-
-        {isFilterOpen && (
-          <CategoryFilterModal
-            value={category}
-            onApply={setCategory}
-            onClose={() => setIsFilterOpen(false)}
-          />
-        )}
+          <button
+            onClick={() => setIsFilterOpen(true)}
+            className="flex items-center gap-1 hover:text-gray-900"
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+            필터
+          </button>
+        </div>
       </section>
 
       {/*질문 리스트*/}
@@ -129,6 +127,17 @@ export default function MainPage() {
         />
       </section>
       <ChatbotFloatingButton />
+
+      {isFilterOpen && (
+        <CategoryFilterModal
+          value={category}
+          onApply={(v) => {
+            setCategory(v)
+            setIsFilterOpen(false)
+          }}
+          onClose={() => setIsFilterOpen(false)}
+        />
+      )}
     </main>
   )
 }

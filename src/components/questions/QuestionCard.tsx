@@ -69,8 +69,6 @@ export default function QuestionCard({
               </span>
               <span>답변 {answers}</span>
             </div>
-
-            <span>답변 {answers}</span>
           </div>
 
           <span>조회수 {views}</span>

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
-import type { CategoryValue } from '@/components/filter'
+import { X, RotateCcw } from 'lucide-react'
 import CategoryFilter from '@/components/filter/CategoryFilter'
+import type { CategoryValue } from '@/types/category'
+import { cn } from '@/lib/utils'
 
 interface Props {
   value: CategoryValue
@@ -13,54 +15,81 @@ export default function CategoryFilterModal({
   onApply,
   onClose,
 }: Props) {
-  const [localValue, setLocalValue] = useState<CategoryValue>(value)
-  const [mounted, setMounted] = useState(false)
+  const [localValue, setLocalValue] = useState(value)
+  const [open, setOpen] = useState(false)
 
   useEffect(() => {
-    setMounted(true)
+    setOpen(true)
   }, [])
+
+  const close = () => {
+    setOpen(false)
+    setTimeout(onClose, 250)
+  }
+
   return (
     <>
-      <div className="fixed inset-0 z-40 bg-black/30" onClick={onClose} />
-
+      {/* Dim */}
       <div
-        className={`fixed top-[72px] right-0 z-50 flex h-[calc(100vh-96px)] w-[420px] flex-col rounded-l-xl bg-white shadow-xl transition-transform duration-300 ease-out ${mounted ? 'translate-x-0' : 'translate-x-full'} `}
+        className={cn(
+          'fixed inset-0 z-40 bg-black/40 transition-opacity duration-200',
+          open ? 'opacity-100' : 'opacity-0'
+        )}
+        onClick={close}
+      />
+
+      {/* Panel */}
+      <aside
+        className={cn(
+          'fixed z-50',
+          'top-[56px] right-6',
+          'w-[420px]',
+          'max-h-[720px] min-h-[640px]',
+          'rounded-xl bg-white shadow-xl',
+          'flex flex-col',
+          open ? 'translate-x-0 opacity-100' : 'translate-x-6 opacity-0',
+          'transition-all duration-250 ease-out'
+        )}
       >
-        <div className="flex items-center justify-between border-b px-6 py-4">
-          <h2 className="text-lg font-bold">필터</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            ✕
+        {/* Header */}
+        <header className="flex items-center justify-between border-b border-gray-800 px-6 py-4">
+          <h2 className="text-gray-primary text-lg font-bold">필터</h2>
+          <button onClick={close}>
+            <X className="h-5 w-5 text-gray-600" />
           </button>
-        </div>
+        </header>
 
-        <div className="flex-1 overflow-y-auto px-6 py-6">
+        {/* Content */}
+        <section className="flex-1 overflow-y-auto px-6 py-6">
+          <p className="mb-4 text-sm font-semibold text-gray-700">
+            카테고리 선택
+          </p>
           <CategoryFilter value={localValue} onChange={setLocalValue} />
-        </div>
+        </section>
 
-        <div className="flex items-center justify-between border-t px-6 py-4">
+        {/* Footer */}
+        <footer className="flex items-center justify-between border-t border-gray-800 px-6 py-4">
           <button
-            className="text-sm text-gray-500 hover:text-gray-700"
             onClick={() =>
               setLocalValue({ main: null, middle: null, sub: null })
             }
+            className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800"
           >
+            <RotateCcw className="h-4 w-4" />
             선택 초기화
           </button>
 
           <button
-            className="bg-primary hover:bg-primary-400 rounded-md px-4 py-2 text-sm font-medium text-white"
             onClick={() => {
               onApply(localValue)
-              onClose()
+              close()
             }}
+            className="bg-primary hover:bg-primary-400 h-10 rounded-md px-6 text-sm font-semibold text-white"
           >
-            필터 적용하기
+            필터 적용
           </button>
-        </div>
-      </div>
+        </footer>
+      </aside>
     </>
   )
 }

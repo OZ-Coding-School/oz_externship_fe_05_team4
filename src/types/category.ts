@@ -1,5 +1,10 @@
+export interface CategoryNode {
+  id: number
+  name: string
+}
+
 export interface CategoryValue {
-  main: string | null
-  middle: string | null
-  sub: string | null
+  main: CategoryNode | null
+  middle: CategoryNode | null
+  sub: CategoryNode | null
 }

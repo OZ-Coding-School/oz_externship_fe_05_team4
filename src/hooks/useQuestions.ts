@@ -34,5 +34,6 @@ export function useQuestions(
     totalPages: data?.count ? Math.ceil(data.count / PAGE_SIZE) : 1,
     isLoading,
     isError,
+    category,
   }
 }
