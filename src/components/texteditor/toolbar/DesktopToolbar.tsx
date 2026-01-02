@@ -56,7 +56,6 @@ export default function DesktopToolbar({
 
   return (
     <>
-      {/* 1줄 */}
       <div className={rowOuter}>
         <div className={rowInner}>
           <Group>
@@ -96,7 +95,6 @@ export default function DesktopToolbar({
         </div>
       </div>
 
-      {/* 2줄 */}
       <div className={rowOuter}>
         <div className={rowInner}>
           <Group>

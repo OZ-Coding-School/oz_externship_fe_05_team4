@@ -1,7 +1,7 @@
 import type { Editor } from '@tiptap/core'
-import { ChevronDown, MoreHorizontal } from 'lucide-react'
+import { ChevronDown, MoreHorizontal, Strikethrough } from 'lucide-react'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import { Group, Hr, SectionTitle, Divider } from './ToolbarPrimitives'
+import { Group, Hr, SectionTitle, Divider, IconBtn } from './ToolbarPrimitives'
 import HistoryControls from './HistoryControls'
 import TextStyleControls from './TextStyleControls'
 import FontControls from './FontControls'
@@ -93,8 +93,14 @@ export default function MobileToolbar({
 
                 <SectionTitle>스타일</SectionTitle>
                 <div className="mt-1 flex items-center gap-1">
-                  <TextStyleControls editor={editor} showStrike />
+                  <IconBtn
+                    onClick={() => editor.chain().focus().toggleStrike().run()}
+                    active={editor.isActive('strike')}
+                  >
+                    <Strikethrough size={18} />
+                  </IconBtn>
                 </div>
+
                 <div className="mt-2">
                   <ColorControls
                     editor={editor}
