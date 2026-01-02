@@ -1,4 +1,4 @@
-import { Avatar } from '@radix-ui/react-avatar'
+import { Avatar, AvatarImage } from '@radix-ui/react-avatar'
 import { Button, Card, Textarea } from '../ui'
 import { ArrowUpDown, MessageCircle } from 'lucide-react'
 import Comment from '@/components/common/Comment'
@@ -38,7 +38,8 @@ export default function Answer({
         <div className="py-2">
           <div className="p-4 py-3">
             <div className="flex items-center">
-              <Avatar className="h- 10 w-10 shrink-0 rounded-full bg-purple-200" />
+              <Avatar className="h- 10 w-10 shrink-0 rounded-full" />
+              <AvatarImage src={answer.author.profile_img_url} />
               <span className="px-3">
                 {answer.author.nickname}
                 {/* TODO: 이거에 해당하는 데이터가 없음 */}

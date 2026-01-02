@@ -2,116 +2,78 @@ import { Avatar, AvatarImage } from '@/components/ui/Avatar'
 import { Button, Card } from '@/components/ui'
 import { ChevronRight, Link } from 'lucide-react'
 import Answer from '@/components/answer/Answer'
-import { useState } from 'react'
+import { useAuthStore } from '@/store'
+import { useQuery } from '@tanstack/react-query'
+import { useNavigate, useParams } from 'react-router'
+import { AvatarFallback } from '@radix-ui/react-avatar'
 
-const detailData = {
-  question_id: 10501,
-  title: 'Django ORM 역참조는 어떻게 사용하나요?',
-  content: 'ForeignKey에 related_name을 지정하면 역참조가 가능합니다...',
-  images: [
-    'https://cdn.ozcodingschool.com/qna/img_10501_01.png',
-    'https://cdn.ozcodingschool.com/qna/img_10501_02.png',
-  ],
-  category_path: '백엔드 > Django > ORM',
-  view_count: 88,
-  created_at: '2025-03-01 10:03:21',
+interface AnswerType {
+  answer_id: number
+  content: string
+  created_at: string
+  is_adopted: boolean
   author: {
-    nickname: '한율회장',
-    profile_img_url: 'https://cdn.ozcodingschool.com/profiles/user_123.png',
-  },
-  answers: [
-    {
-      answer_id: 8801,
-      content: 'Post 객체 기준에서 post.answer_set.all() 로 접근 가능합니다.',
-      created_at: '2025-03-01 12:10:11',
-      is_adopted: false,
-      author: {
-        nickname: 'PythonKing',
-        profile_img_url: 'https://cdn.ozcodingschool.com/profiles/user_222.png',
-      },
-      comments: [
-        {
-          comment_id: 91001,
-          content: '관련 예제 코드도 공유해주실 수 있나요?',
-          created_at: '2025-03-01 13:20:44',
-          author: {
-            nickname: 'DBMaster',
-            profile_img_url:
-              'https://cdn.ozcodingschool.com/profiles/user_111.png',
-          },
-        },
-        {
-          comment_id: 91002,
-          content: '아니요',
-          created_at: '2025-03-01 13:20:44',
-          author: {
-            nickname: 'iron',
-            profile_img_url:
-              'https://cdn.ozcodingschool.com/profiles/user_111.png',
-          },
-        },
-        {
-          comment_id: 91003,
-          content: '댓글 목업 데이터',
-          created_at: '2025-03-01 13:20:44',
-          author: {
-            nickname: 'jnubugo',
-            profile_img_url:
-              'https://cdn.ozcodingschool.com/profiles/user_111.png',
-          },
-        },
-      ],
-    },
-    {
-      answer_id: 8802,
-      content: `print("""1. 동해물과
-2. 백두산이
-3. 마르고 닳도록
-4. 하느님이 보우하사
-5. 우리 나라 만세
-""")
+    nickname: string
+    profile_img_url: string
+  }
+  // 필요한 다른 필드들도 추가하세요
+}
 
-# 결과
-# 1. 동해물과
-# 2. 백두산이
-# 3. 마르고 닳도록
-# 4. 하느님이 보우하사
-# 5. 우리 나라 만세`,
-      created_at: '2025-12-01 12:10:11',
-      is_adopted: false,
-      author: {
-        nickname: 'young2name',
-        profile_img_url: 'https://cdn.ozcodingschool.com/profiles/user_222.png',
-      },
-      comments: [
-        {
-          comment_id: 91011,
-          content: '좋은 답변 감사합니다!',
-          created_at: '2025-03-01 13:20:44',
-          author: {
-            nickname: 'OZ',
-            profile_img_url:
-              'https://cdn.ozcodingschool.com/profiles/user_111.png',
-          },
-        },
-        {
-          comment_id: 91012,
-          content: '좋아요!',
-          created_at: '2025-03-01 13:20:44',
-          author: {
-            nickname: 'JM',
-            profile_img_url:
-              'https://cdn.ozcodingschool.com/profiles/user_111.png',
-          },
-        },
-      ],
-    },
-  ],
+// 2. 전체 질문 데이터 구조 정의
+interface QuestionDetailType {
+  id: number
+  title: string
+  content: string
+  category: {
+    id: number
+    depth: number
+    names: string[] // 문자열 배열로 변경
+  }
+  view_count: number
+  created_at: string
+  author: {
+    id: number
+    nickname: string
+    profile_image_url: string
+  }
+  images: string[]
 }
 
 export default function QuestionDetail() {
-  const [user] = useState(null)
-  const arr = detailData.category_path.split(' > ')
+  const { id } = useParams()
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated())
+  const user = useAuthStore((state) => state.user)
+  const navigate = useNavigate()
+
+  // 1. 데이터를 가져오는 로직 (순수하게 fetch만 수행)
+  const {
+    data: detailData,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['question', id],
+    enabled: !!id,
+    queryFn: async () => {
+      const response = await fetch(
+        `https://api.ozcodingschool.site/api/v1/qna/questions/${id}`
+      )
+      const data = await response.json()
+      console.log(data)
+
+      if (!response.ok) throw new Error('데이터 로드 실패')
+      return data
+    },
+  })
+
+  // 2. 로딩 및 에러 처리 (데이터가 없을 때 아래 코드가 실행되지 않게 가드)
+  if (isLoading) return <div>로딩 중...</div>
+  if (isError || !detailData) return <div>에러가 발생했습니다.</div>
+
+  // 3. 데이터가 확실히 존재할 때 변수 가공 (useQuery 밖에서 선언!)
+  // 이제 detailData를 마음껏 쓸 수 있습니다.
+  // const questionId = detailData.question_id
+  // TODO:카테고리 3개이상 나오면
+  const arr = detailData.category.names
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
       {/* 1. 상단 브레드크럼  */}
@@ -134,8 +96,11 @@ export default function QuestionDetail() {
 
         <div className="flex items-center gap-2">
           {/* TODO: 아바타 배경 제거 */}
-          <Avatar className="h-10 w-10 bg-black">
-            <AvatarImage src={detailData.author.profile_img_url} />
+          <Avatar className="h-10 w-10 shrink-0 rounded-full">
+            <AvatarImage src={detailData.author.profile_image_url} />
+            <AvatarFallback className="bg-gray-200 text-gray-500">
+              {detailData.author.nickname}
+            </AvatarFallback>
           </Avatar>
 
           <p className="font-medium whitespace-nowrap text-gray-700">
@@ -151,9 +116,15 @@ export default function QuestionDetail() {
           조회수 {detailData.view_count}
           {detailData.created_at}
         </p>
-        <Button variant="ghost" className="cursor-pointer text-purple-700">
-          수정
-        </Button>
+        {isAuthenticated && user?.nickname === detailData.author.nickname && (
+          <Button
+            variant="ghost"
+            className="cursor-pointer text-purple-700"
+            onClick={() => navigate(`/Question/edit/${detailData.id}`)}
+          >
+            수정
+          </Button>
+        )}
       </div>
 
       {/* 4. 본문 내용 영역 */}
@@ -175,29 +146,31 @@ export default function QuestionDetail() {
       </div>
 
       {/* 5. 답변자 ui */}
-      <Card className="my-20 flex items-center justify-between rounded-3xl border-gray-200 p-9">
-        <div className="flex items-center gap-4">
-          <Avatar className="h-12 w-12 bg-purple-100">
-            <AvatarImage src={detailData.author.profile_img_url} />
-          </Avatar>
+      {isAuthenticated && (
+        <Card className="my-20 flex items-center justify-between rounded-3xl border-gray-200 p-9">
+          <div className="flex items-center gap-4">
+            <Avatar className="h-12 w-12 bg-purple-100">
+              <AvatarImage src={detailData.author.profile_img_url} />
+            </Avatar>
 
-          {/* 텍스트 부분 */}
-          <div className="flex flex-col">
-            <span className="text-sm font-medium text-purple-600">
-              {detailData.author.nickname} 님,
-            </span>
-            <span className="text-lg font-bold text-gray-900">
-              정보를 공유해 주세요.
-            </span>
+            {/* 텍스트 부분 */}
+            <div className="flex flex-col">
+              <span className="text-sm font-medium text-purple-600">
+                {detailData.author.nickname} 님,
+              </span>
+              <span className="text-lg font-bold text-gray-900">
+                정보를 공유해 주세요.
+              </span>
+            </div>
           </div>
-        </div>
 
-        {/* 버튼 부분 */}
-        <Button className="rounded-full bg-purple-600 px-8 py-6 text-lg font-medium text-white hover:bg-purple-700">
-          답변하기
-        </Button>
-      </Card>
+          {/* 버튼 부분 */}
 
+          <Button className="rounded-full bg-purple-600 px-8 py-6 text-lg font-medium text-white hover:bg-purple-700">
+            답변하기
+          </Button>
+        </Card>
+      )}
       {/* 5. 몇개의 답변*/}
       <div className="flex items-center gap-2 py-6">
         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-600 font-bold text-white">
@@ -207,8 +180,8 @@ export default function QuestionDetail() {
           <span>{detailData.answers.length}개의 답변이 있어요</span>
         </p>
       </div>
-
-      {detailData.answers.map((answer) => (
+      {/* TODO: any type 수정 */}
+      {detailData.answers.map((answer: any) => (
         // TODO: 예비 1번
         <Answer key={answer.answer_id} answer={answer} user={user} />
       ))}
