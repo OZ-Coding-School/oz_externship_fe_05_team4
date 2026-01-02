@@ -1,7 +1,7 @@
 import { ImagePresignedUrlApi } from '@/api/image.api'
 import { imageUpload } from '@/utils'
 
-export const uploadingImages = async (file: File): Promise<string> => {
+export const uploadingImage = async (file: File): Promise<string> => {
   const fileName = file.name
 
   const { presignedUrl, imgUrl } = await ImagePresignedUrlApi({
