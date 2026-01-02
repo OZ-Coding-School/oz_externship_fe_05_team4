@@ -135,39 +135,46 @@ export default function ChatbotLayout({ entry }: Props) {
       </header>
 
       <main className="flex-1 overflow-y-auto px-4 py-4">
-        {mode === 'select' && (
-          <div className="mb-4 flex gap-2">
-            <button
-              className="flex-1 rounded-full border border-gray-200 px-3 py-2 text-xs text-gray-700"
-              onClick={async () => {
-                if (entry.type !== 'followup') return
+        <div
+          className={`transition-all duration-200 ease-out ${
+            mode === 'select'
+              ? 'translate-y-0 opacity-100'
+              : 'pointer-events-none -translate-y-2 opacity-0'
+          }`}
+        >
+          {mode === 'select' && (
+            <div className="mb-4 flex gap-2">
+              <button
+                className="flex-1 rounded-full border border-gray-200 px-3 py-2 text-xs text-gray-700"
+                onClick={async () => {
+                  if (entry.type !== 'followup') return
 
-                const sid = await createChatbotSession(entry.questionId)
-                setSessionId(sid)
+                  const sid = await createChatbotSession(entry.questionId)
+                  setSessionId(sid)
+                  const history = await getChatCompletions(sid)
+                  setMessages(history)
+                  setMode('chat')
+                }}
+              >
+                이전 대화 불러오기
+              </button>
 
-                const history = await getChatCompletions(sid)
-                setMessages(history)
-                setMode('chat')
-              }}
-            >
-              이전 대화 불러오기
-            </button>
+              <button
+                className="bg-primary flex-1 rounded-full px-3 py-2 text-xs text-white"
+                onClick={async () => {
+                  if (entry.type !== 'followup') return
 
-            <button
-              className="bg-primary flex-1 rounded-full px-3 py-2 text-xs text-white"
-              onClick={async () => {
-                if (entry.type !== 'followup') return
-
-                const sid = await createChatbotSession(entry.questionId)
-                setSessionId(sid)
-                setMessages([FOLLOWUP_MESSAGE])
-                setMode('chat')
-              }}
-            >
-              새 채팅하기
-            </button>
-          </div>
-        )}
+                  const sid = await createChatbotSession(entry.questionId)
+                  setSessionId(sid)
+                  setMessages([FOLLOWUP_MESSAGE])
+                  setMode('chat')
+                }}
+              >
+                새 채팅하기
+              </button>
+            </div>
+          )}
+        </div>
 
         <ChatMessageList messages={messages} />
       </main>
