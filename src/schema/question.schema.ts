@@ -25,7 +25,7 @@ const ImageSchema = z.object({
 
 // 베이스
 // 질문
-const QuestionBase = z.object({
+const QuestionBaseSchema = z.object({
   id: z.number(),
   title: z.string(),
   view_count: z.number(),
@@ -53,10 +53,10 @@ const AnswerSchema = z.object({
 })
 
 // ===============================================================================
-
 // 조립하여 사용할 스키마 완성
+
 // 목록 조회
-export const QuestionListItemSchema = QuestionBase.extend({
+export const QuestionListItemSchema = QuestionBaseSchema.extend({
   content_preview: z.string(),
   answer_count: z.number(),
   thumbnail_img_url: z.url().nullable(),
@@ -85,8 +85,8 @@ export const QuestionListSchema = z.object({
 
 export type QuestionList = z.infer<typeof QuestionListSchema>
 
-// 상세 조회
-export const QuestionDetailSchema = QuestionBase.extend({
+// 상세 조회 & 수정 응답
+export const QuestionDetailSchema = QuestionBaseSchema.extend({
   content: z.string(),
   images: z.array(ImageSchema),
   answers: z.array(AnswerSchema),
@@ -135,4 +135,40 @@ export const QuestionDetailSchema = QuestionBase.extend({
 
 export type QuestionDetail = z.infer<typeof QuestionDetailSchema>
 
-// 등록 & 수정
+// 등록 요청
+export const QuestionCreateRequestSchema = z.object({
+  title: z
+    .string()
+    .min(1, '제목을 입력해주세요.')
+    .max(50, '제목은 50자 이하로 입력해주세요.'),
+  content: z.string().min(1, '내용을 입력해주세요.'),
+  category: z.coerce.number().int().positive('카테고리를 선택해주세요.'),
+})
+
+export type QuestionCreateRequest = z.infer<typeof QuestionCreateRequestSchema>
+
+// 등록 응답
+export const QuestionCreateResponseSchema = z
+  .object({
+    message: z.string(),
+    question_id: z.number().int().positive(),
+  })
+  .transform((data) => ({
+    message: data.message,
+    questionId: data.question_id,
+  }))
+
+export type QuestionCreateResponse = z.infer<
+  typeof QuestionCreateResponseSchema
+>
+
+// (등록 요청, 상세 조회와 동일하지만 나중에 변경시 수정하기도 수월하고, 현재도 더 명시적으로 분리)
+// 수정 요청
+export const QuestionEditRequestSchema = QuestionCreateRequestSchema
+
+export type QuestionEditRequest = z.infer<typeof QuestionEditRequestSchema>
+
+// 수정 응답
+export const QuestionEditResponseSchema = QuestionDetailSchema
+
+export type QuestionEditResponse = z.infer<typeof QuestionEditResponseSchema>
