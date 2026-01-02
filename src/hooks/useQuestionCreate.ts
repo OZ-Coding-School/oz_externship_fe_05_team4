@@ -5,7 +5,7 @@ import type {
   QuestionCreateErrorResponse,
   QuestionCreate,
 } from '@/types'
-import { QuestionCreateApi } from '@/api/QuestionCreateApi'
+import { QuestionCreateApi } from '@/api'
 
 export const useQuestionCreate = () =>
   useMutation<

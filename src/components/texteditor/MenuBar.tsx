@@ -21,11 +21,12 @@ import {
   ArrowRight,
   ChevronDown,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 
 type MenuBarProps = {
   editor: Editor | null
+  onUploadImages?: (files: File[]) => Promise<void>
 }
 
 const IconBtn = ({
@@ -69,12 +70,12 @@ const lineHeights = [
   { label: '2', value: '2' },
 ]
 
-export default function MenuBar({ editor }: MenuBarProps) {
+export default function MenuBar({ editor, onUploadImages }: MenuBarProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [font, setFont] = useState('')
   const [size, setSize] = useState('16')
   const [textColor, setTextColor] = useState('#111827')
   const [bgColor, setBgColor] = useState('#DBEAFE')
-
   if (!editor) return null
 
   const applyFont = (v: string) => {
@@ -291,15 +292,38 @@ export default function MenuBar({ editor }: MenuBarProps) {
           </IconBtn>
 
           {/* 이미지 */}
-          <IconBtn
-            onClick={() => {
-              const url = prompt('이미지 URL을 입력하세요')
-              if (!url) return
-              editor.chain().focus().setImage({ src: url }).run()
-            }}
-          >
+          <IconBtn onClick={() => fileInputRef.current?.click()}>
             <ImageIcon size={18} />
           </IconBtn>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/gif"
+            multiple
+            className="hidden"
+            onChange={async (e) => {
+              const files = Array.from(e.target.files ?? [])
+              if (files.length === 0) return
+              const allowed = [
+                'image/png',
+                'image/jpeg',
+                'image/webp',
+                'image/gif',
+              ]
+
+              const invalid = files.find((file) => !allowed.includes(file.type))
+              if (invalid) {
+                alert('png/jpg/webp/gif만 업로드 가능')
+                e.target.value = ''
+                return
+              }
+
+              await onUploadImages?.(files)
+
+              e.target.value = ''
+            }}
+          />
         </div>
       </div>
 
