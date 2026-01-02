@@ -58,7 +58,7 @@ export default function QuestionDetail() {
         `https://api.ozcodingschool.site/api/v1/qna/questions/${id}`
       )
       const data = await response.json()
-      console.log(data)
+      // console.log(data)
 
       if (!response.ok) throw new Error('데이터 로드 실패')
       return data

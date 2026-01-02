@@ -38,8 +38,10 @@ export default function Answer({
         <div className="py-2">
           <div className="p-4 py-3">
             <div className="flex items-center">
-              <Avatar className="h- 10 w-10 shrink-0 rounded-full" />
-              <AvatarImage src={answer.author.profile_img_url} />
+              <Avatar className="h- 10 w-10 shrink-0 rounded-full">
+                <AvatarImage src={answer.author.profile_img_url} />
+              </Avatar>
+
               <span className="px-3">
                 {answer.author.nickname}
                 {/* TODO: 이거에 해당하는 데이터가 없음 */}
