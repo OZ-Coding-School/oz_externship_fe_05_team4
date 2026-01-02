@@ -45,5 +45,3 @@ const fetchMe = async (): Promise<User> => {
 //     },
 //   })
 // }
-
-export { logIn, refreshAccessToken, fetchMe }
