@@ -3,24 +3,8 @@ import axios from 'axios'
 import { token } from '@/lib/auth.token'
 
 //타입
-interface CompletionItem {
-  id: number
-  role: 'user' | 'assistant'
-  content: string
-}
-
-interface ChatCompletionsResponse {
-  data?: CompletionItem[]
-  completions?: CompletionItem[]
-  items?: CompletionItem[]
-}
-
 interface ChatSession {
   id: number
-}
-
-interface StreamChunk {
-  contents: string
 }
 
 //axios 인스턴스
@@ -42,22 +26,6 @@ function authHeader() {
   }
 }
 
-function extractCompletions(response: unknown): CompletionItem[] {
-  if (Array.isArray(response)) {
-    return response as CompletionItem[]
-  }
-
-  if (typeof response === 'object' && response !== null) {
-    const obj = response as ChatCompletionsResponse
-
-    if (Array.isArray(obj.data)) return obj.data
-    if (Array.isArray(obj.completions)) return obj.completions
-    if (Array.isArray(obj.items)) return obj.items
-  }
-
-  return []
-}
-
 //세션 생성
 export async function createChatbotSession(
   questionId?: number
@@ -75,16 +43,24 @@ export async function createChatbotSession(
 export async function getChatCompletions(
   sessionId: number
 ): Promise<ChatMessageType[]> {
-  const res = await api.get<unknown>(
-    `/chatbot/sessions/${sessionId}/completions`
-  )
+  const res = await api.get<{
+    results?: {
+      id: number
+      role: 'user' | 'assistant'
+      message: string
+    }[]
+  }>(`/chatbot/sessions/${sessionId}/completions`, {
+    headers: authHeader(),
+  })
 
-  const items = extractCompletions(res.data)
+  const results = res.data?.results
 
-  return items.map((item) => ({
+  if (!Array.isArray(results)) return []
+
+  return results.map((item) => ({
     id: item.id,
     role: item.role,
-    content: item.content,
+    content: item.message,
   }))
 }
 
@@ -98,12 +74,16 @@ export async function getLastChatbotSession(): Promise<number | null> {
   return res.data[0].id
 }
 
-//SSE 스트리밍
+// SSE 스트리밍
 interface StreamParams {
   sessionId: number
   message: string
   assistantId: number
   setMessages: React.Dispatch<React.SetStateAction<ChatMessageType[]>>
+}
+
+interface StreamChunk {
+  contents: string
 }
 
 export async function streamChatCompletion({
@@ -132,25 +112,38 @@ export async function streamChatCompletion({
   const reader = res.body.getReader()
   const decoder = new TextDecoder()
 
+  let buffer = ''
+  let acc = ''
+
   while (true) {
     const { value, done } = await reader.read()
     if (done) break
 
-    const chunk = decoder.decode(value, { stream: true })
-    for (const line of chunk.split('\n')) {
+    buffer += decoder.decode(value, { stream: true })
+
+    const lines = buffer.split('\n')
+    buffer = lines.pop() ?? ''
+
+    for (let line of lines) {
+      line = line.trim()
       if (!line.startsWith('data:')) continue
 
-      const payload = line.replace('data:', '').trim()
+      const payload = line.replace(/^data:\s*/, '').trim()
+      if (!payload) continue
       if (payload === '[DONE]') return
 
       try {
-        const parsed: StreamChunk = JSON.parse(payload)
+        const parsed = JSON.parse(payload) as StreamChunk
+        const next = parsed.contents ?? ''
+
+        if (next.startsWith(acc)) {
+          acc = next
+        } else {
+          acc += next
+        }
+
         setMessages((prev) =>
-          prev.map((m) =>
-            m.id === assistantId
-              ? { ...m, content: m.content + parsed.contents }
-              : m
-          )
+          prev.map((m) => (m.id === assistantId ? { ...m, content: acc } : m))
         )
       } catch {
         continue

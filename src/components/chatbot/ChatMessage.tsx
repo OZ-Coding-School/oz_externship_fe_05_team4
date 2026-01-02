@@ -1,42 +1,28 @@
-import { cn } from '@/lib/utils'
 import type { ChatMessageType } from '@/types'
 import chatbotIcon from '@/assets/chatbot.png'
 
-export default function ChatMessage({
-  role,
-  content,
-  status,
-}: ChatMessageType) {
+export default function ChatMessage({ role, content }: ChatMessageType) {
   const isUser = role === 'user'
 
+  if (isUser) {
+    return (
+      <div className="mb-3 flex justify-end">
+        <div className="bg-primary max-w-[240px] rounded-[18px] px-4 py-2 text-sm text-white">
+          {content}
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div
-      className={cn('flex w-full', isUser ? 'justify-end' : 'justify-start')}
-    >
-      {!isUser && (
-        <img
-          src={chatbotIcon}
-          alt="AI"
-          className="h-6 w-6 rounded-full bg-gray-100 p-0.5"
-        />
-      )}
+    <div className="relative mb-4">
+      <img
+        src={chatbotIcon}
+        className="absolute top-0 left-0 h-6 w-6 rounded-full bg-white"
+      />
 
-      <div
-        className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
-          isUser ? 'bg-primary text-white' : 'bg-gray-100 text-gray-800'
-        }`}
-      >
-        {status === 'loading' && (
-          <span className="animate-pulse text-gray-400">
-            AI가 답변을 작성 중입니다…
-          </span>
-        )}
-
-        {status === 'error' && (
-          <span className="text-red-500">답변을 불러오지 못했습니다.</span>
-        )}
-
-        {!status && content}
+      <div className="ml-8 max-w-[260px] rounded-[18px] bg-gray-100 px-4 py-2 text-sm text-gray-800">
+        {content}
       </div>
     </div>
   )

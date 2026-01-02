@@ -9,6 +9,7 @@ import {
   streamChatCompletion,
 } from '@/lib/chatbot'
 import { token } from '@/lib'
+import chatbotIcon from '@/assets/chatbot.png'
 
 interface Props {
   entry: ChatbotEntry
@@ -31,13 +32,11 @@ export default function ChatbotLayout({ entry }: Props) {
   const [sessionId, setSessionId] = useState<number | null>(null)
   const [mode, setMode] = useState<ChatMode>('chat')
 
+  //진입 처리
   useEffect(() => {
-    // 플로팅 진입
     if (entry.type === 'floating') {
-      const initFloating = async () => {
-        const accessToken = token.get()
-
-        if (!accessToken) {
+      const init = async () => {
+        if (!token.get()) {
           setMessages([
             {
               id: 1,
@@ -48,15 +47,13 @@ export default function ChatbotLayout({ entry }: Props) {
           return
         }
 
-        const lastSessionId = await getLastChatbotSession()
-
-        if (lastSessionId) {
-          setSessionId(lastSessionId)
-          const history = await getChatCompletions(lastSessionId)
-
-          if (history.length > 0) {
+        //플로팅
+        const last = await getLastChatbotSession()
+        if (last) {
+          setSessionId(last)
+          const history = await getChatCompletions(last)
+          if (history.length) {
             setMessages(history)
-            setMode('chat')
             return
           }
         }
@@ -64,14 +61,13 @@ export default function ChatbotLayout({ entry }: Props) {
         const sid = await createChatbotSession()
         setSessionId(sid)
         setMessages([GREETING_MESSAGE])
-        setMode('chat')
       }
 
-      initFloating()
+      init()
       return
     }
 
-    // 추가 질문 진입
+    //추가 질문
     if (entry.type === 'followup') {
       setMessages([GREETING_MESSAGE])
       setSessionId(null)
@@ -79,17 +75,16 @@ export default function ChatbotLayout({ entry }: Props) {
     }
   }, [entry])
 
+  //메시지 전송
   const handleSend = async (text: string) => {
     if (mode !== 'chat') return
 
-    let currentSessionId = sessionId
-
-    if (currentSessionId === null) {
-      const questionId =
+    let sid = sessionId
+    if (!sid) {
+      sid = await createChatbotSession(
         entry.type === 'followup' ? entry.questionId : undefined
-
-      currentSessionId = await createChatbotSession(questionId)
-      setSessionId(currentSessionId)
+      )
+      setSessionId(sid)
     }
 
     const userId = Date.now()
@@ -98,88 +93,68 @@ export default function ChatbotLayout({ entry }: Props) {
     setMessages((prev) => [
       ...prev,
       { id: userId, role: 'user', content: text },
-      {
-        id: assistantId,
-        role: 'assistant',
-        content: '',
-        status: 'loading',
-      },
+      { id: assistantId, role: 'assistant', content: '', status: 'loading' },
     ])
 
-    try {
-      await streamChatCompletion({
-        sessionId: currentSessionId,
-        message: text,
-        assistantId,
-        setMessages,
-      })
+    await streamChatCompletion({
+      sessionId: sid,
+      message: text,
+      assistantId,
+      setMessages,
+    })
 
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === assistantId ? { ...msg, status: undefined } : msg
-        )
-      )
-    } catch {
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === assistantId ? { ...msg, status: 'error' } : msg
-        )
-      )
-    }
+    setMessages((prev) =>
+      prev.map((m) => (m.id === assistantId ? { ...m, status: undefined } : m))
+    )
   }
 
   return (
-    <div className="fixed right-6 bottom-24 z-40 flex h-[560px] w-[360px] flex-col rounded-2xl bg-white shadow-2xl">
-      <header className="bg-primary flex h-14 items-center px-4 font-semibold text-white">
-        AI OZ
+    <div className="fixed right-6 bottom-24 z-40 flex h-[560px] w-[360px] flex-col overflow-hidden rounded-[20px] bg-white shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
+      {/* HEADER */}
+      <header className="bg-primary flex h-[56px] shrink-0 items-center gap-2 px-4 text-white">
+        <img
+          src={chatbotIcon}
+          className="h-6 w-6 rounded-full bg-white p-[2px]"
+        />
+        <span className="text-sm font-semibold">AI OZ</span>
       </header>
 
-      <main className="flex-1 overflow-y-auto px-4 py-4">
-        <div
-          className={`transition-all duration-200 ease-out ${
-            mode === 'select'
-              ? 'translate-y-0 opacity-100'
-              : 'pointer-events-none -translate-y-2 opacity-0'
-          }`}
-        >
-          {mode === 'select' && (
-            <div className="mb-4 flex gap-2">
-              <button
-                className="flex-1 rounded-full border border-gray-200 px-3 py-2 text-xs text-gray-700"
-                onClick={async () => {
-                  if (entry.type !== 'followup') return
+      <main className="flex-1 overflow-y-auto bg-white px-4 py-3">
+        {mode === 'select' && (
+          <div className="mb-3 flex gap-2">
+            <button
+              className="flex-1 rounded-full border border-gray-200 px-3 py-2 text-xs"
+              onClick={async () => {
+                if (entry.type !== 'followup') return
+                const sid = await createChatbotSession(entry.questionId)
+                setSessionId(sid)
+                setMessages(await getChatCompletions(sid))
+                setMode('chat')
+              }}
+            >
+              이전 대화 불러오기
+            </button>
 
-                  const sid = await createChatbotSession(entry.questionId)
-                  setSessionId(sid)
-                  const history = await getChatCompletions(sid)
-                  setMessages(history)
-                  setMode('chat')
-                }}
-              >
-                이전 대화 불러오기
-              </button>
-
-              <button
-                className="bg-primary flex-1 rounded-full px-3 py-2 text-xs text-white"
-                onClick={async () => {
-                  if (entry.type !== 'followup') return
-
-                  const sid = await createChatbotSession(entry.questionId)
-                  setSessionId(sid)
-                  setMessages([FOLLOWUP_MESSAGE])
-                  setMode('chat')
-                }}
-              >
-                새 채팅하기
-              </button>
-            </div>
-          )}
-        </div>
+            <button
+              className="bg-primary flex-1 rounded-full px-3 py-2 text-xs text-white"
+              onClick={async () => {
+                if (entry.type !== 'followup') return
+                const sid = await createChatbotSession(entry.questionId)
+                setSessionId(sid)
+                setMessages([FOLLOWUP_MESSAGE])
+                setMode('chat')
+              }}
+            >
+              새 채팅하기
+            </button>
+          </div>
+        )}
 
         <ChatMessageList messages={messages} />
       </main>
 
-      <footer className="border-t px-4 py-3">
+      {/* FOOTER */}
+      <footer className="shrink-0 border-t px-4 py-3">
         <ChatInput onSend={handleSend} disabled={mode === 'select'} />
       </footer>
     </div>
