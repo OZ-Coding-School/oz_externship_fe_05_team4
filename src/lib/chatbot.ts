@@ -9,6 +9,12 @@ interface CompletionItem {
   content: string
 }
 
+interface ChatCompletionsResponse {
+  data?: CompletionItem[]
+  completions?: CompletionItem[]
+  items?: CompletionItem[]
+}
+
 interface ChatSession {
   id: number
 }
@@ -36,6 +42,22 @@ function authHeader() {
   }
 }
 
+function extractCompletions(response: unknown): CompletionItem[] {
+  if (Array.isArray(response)) {
+    return response as CompletionItem[]
+  }
+
+  if (typeof response === 'object' && response !== null) {
+    const obj = response as ChatCompletionsResponse
+
+    if (Array.isArray(obj.data)) return obj.data
+    if (Array.isArray(obj.completions)) return obj.completions
+    if (Array.isArray(obj.items)) return obj.items
+  }
+
+  return []
+}
+
 //세션 생성
 export async function createChatbotSession(
   questionId?: number
@@ -53,12 +75,13 @@ export async function createChatbotSession(
 export async function getChatCompletions(
   sessionId: number
 ): Promise<ChatMessageType[]> {
-  const res = await api.get<CompletionItem[]>(
-    `/chatbot/sessions/${sessionId}/completions`,
-    { headers: authHeader() }
+  const res = await api.get<unknown>(
+    `/chatbot/sessions/${sessionId}/completions`
   )
 
-  return res.data.map((item) => ({
+  const items = extractCompletions(res.data)
+
+  return items.map((item) => ({
     id: item.id,
     role: item.role,
     content: item.content,
