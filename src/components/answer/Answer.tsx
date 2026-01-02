@@ -39,7 +39,7 @@ export default function Answer({
 
       {/* 답변 내용 */}
       <div className="mb-8 flex flex-col gap-8 border-b border-gray-200 py-4">
-        {/* TODO: 텍스트 에디터 */}
+        {/* TODO: 텍스트 에디터 뷰어 */}
         <div className="rounded-lg bg-gray-50 py-8 whitespace-pre-wrap">
           {answer.content}
         </div>
@@ -53,7 +53,7 @@ export default function Answer({
       {isAuthenticated && (
         <div className="text-right text-sm text-gray-400">
           <div className="relative">
-            {/* TODO: form 으로? */}
+            {/* TODO: 댓글 등록 API 연결 (form 으로?) */}
             <Textarea
               rows={5}
               className="w-full border border-gray-300 px-6 py-4 text-sm"
@@ -76,6 +76,7 @@ export default function Answer({
               댓글 {answer.comments.length}개{' '}
             </h2>
           </div>
+          {/* TODO: 댓글 정렬 버튼 (최신순, 오래된 순) */}
           <Button variant="ghost" className="text-gray-600">
             최신순
             <ArrowUpDown className="h-4 w-4" />
@@ -91,3 +92,5 @@ export default function Answer({
     </Card>
   )
 }
+
+// TODO: 답변 삭제

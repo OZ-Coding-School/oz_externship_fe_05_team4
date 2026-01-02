@@ -25,3 +25,5 @@ export default function Comment({ comment }: { comment: Comment }) {
     </div>
   )
 }
+
+// TODO: 댓글 수정, 삭제

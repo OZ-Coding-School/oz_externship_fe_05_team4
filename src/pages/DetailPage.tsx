@@ -17,29 +17,27 @@ export default function QuestionDetail() {
 
   const { data, isLoading, isError } = useQuestion(id)
 
-  // 로딩 및 에러
+  // TODO: 로딩 중, 에러 처리 (Suspense & Error Boundary?)
   if (isLoading) return <div>로딩 중...</div>
+
   if (isError || !data) return <div>에러가 발생했습니다.</div>
 
-  const arr = data.category.names
-
-  // 데이터가 확실히 존재할 때
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-8 px-4 py-8">
       <div>
         {/* 1. 상단 브레드크럼  */}
         <nav className="text-primary mb-4 flex items-center gap-1 font-semibold">
-          <span>{arr[0]}</span>
-          {arr.length > 1 && (
+          <span>{data.category.names[0]}</span>
+          {data.category.names.length > 1 && (
             <>
               <ChevronRight className="h-4 w-4" />
-              <span>{arr[1]}</span>
+              <span>{data.category.names[1]}</span>
             </>
           )}
-          {arr.length > 2 && (
+          {data.category.names.length > 2 && (
             <>
               <ChevronRight className="h-4 w-4" />
-              <span className="font-bold">{arr[2]}</span>
+              <span className="font-bold">{data.category.names[2]}</span>
             </>
           )}
         </nav>
