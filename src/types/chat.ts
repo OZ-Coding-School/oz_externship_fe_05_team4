@@ -9,3 +9,5 @@ export interface ChatMessageType {
 export type ChatbotEntry =
   | { type: 'floating' }
   | { type: 'followup'; questionId: number }
+
+export type ChatMode = 'select' | 'chat'

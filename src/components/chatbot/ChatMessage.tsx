@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import type { ChatMessageType } from '@/types'
-import botImage from '@/assets/chatbot.png'
+import chatbotIcon from '@/assets/chatbot.png'
 
 export default function ChatMessage({
   role,
@@ -15,17 +15,16 @@ export default function ChatMessage({
     >
       {!isUser && (
         <img
-          src={botImage}
+          src={chatbotIcon}
           alt="AI"
-          className="mr-2 h-8 w-8 shrink-0 rounded-full"
+          className="h-6 w-6 rounded-full bg-gray-100 p-0.5"
         />
       )}
 
       <div
-        className={cn(
-          'max-w-[260px] rounded-2xl px-4 py-3 text-sm leading-relaxed',
+        className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
           isUser ? 'bg-primary text-white' : 'bg-gray-100 text-gray-800'
-        )}
+        }`}
       >
         {status === 'loading' && (
           <span className="animate-pulse text-gray-400">
