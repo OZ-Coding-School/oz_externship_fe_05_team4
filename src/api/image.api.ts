@@ -1,21 +1,12 @@
 import type { PresignRequest, PresignResponse } from '@/types/image'
-import { api, token } from '@/lib'
+import { api } from '@/lib'
 
 export const ImagePresignedUrlApi = async (
   payload: PresignRequest
 ): Promise<PresignResponse> => {
-  const res = await api.put(
-    '/api/v1/questions/presigned-url',
-    {
-      file_name: payload.fileName,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${token.get()}`,
-        'Content-Type': 'application/json',
-      },
-    }
-  )
+  const res = await api.post('/qna/questions/presigned-url/', {
+    file_name: payload.fileName,
+  })
 
   return {
     presignedUrl: res.data.presigned_url,

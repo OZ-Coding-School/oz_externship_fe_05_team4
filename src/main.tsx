@@ -7,6 +7,7 @@ import { queryClient } from '@/lib/index'
 import AuthProvider from './components/auth/AuthProvider.tsx'
 
 async function enableMocking() {
+  return
   if (process.env.NODE_ENV !== 'development') {
     return
   }

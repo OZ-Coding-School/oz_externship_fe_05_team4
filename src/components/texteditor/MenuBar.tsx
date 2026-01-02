@@ -299,12 +299,25 @@ export default function MenuBar({ editor, onUploadImages }: MenuBarProps) {
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept="image/png,image/jpeg,image/webp,image/gif"
             multiple
             className="hidden"
             onChange={async (e) => {
               const files = Array.from(e.target.files ?? [])
               if (files.length === 0) return
+              const allowed = [
+                'image/png',
+                'image/jpeg',
+                'image/webp',
+                'image/gif',
+              ]
+
+              const invalid = files.find((file) => !allowed.includes(file.type))
+              if (invalid) {
+                alert('png/jpg/webp/gif만 업로드 가능')
+                e.target.value = ''
+                return
+              }
 
               await onUploadImages?.(files)
 
