@@ -1,22 +1,26 @@
-import { Avatar } from '@radix-ui/react-avatar'
+import { Avatar, AvatarImage } from '@/components/ui'
+import profile from '@/assets/profile.png'
+import type { Comment } from '@/schema/question.schema'
+import { format } from 'date-fns'
 
-interface CommentProps {
-  nickname: string
-  date: string
-  content: string
-}
-export default function Comment({ nickname, date, content }: CommentProps) {
+export default function Comment({ comment }: { comment: Comment }) {
   return (
-    <div className="flex space-x-3 border-gray-50 py-4">
-      <Avatar className="h-10 w-10 shrink-0 rounded-full bg-purple-200" />
+    <div className="flex items-center gap-6">
+      <Avatar className="h-10 w-10 overflow-hidden rounded-full">
+        <AvatarImage src={comment.author.profileImageUrl ?? profile} />
+      </Avatar>
 
-      <div className="flex flex-col">
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-gray-900">{nickname}</span>
-          <span className="text-sm text-gray-400">{date}</span>
+      <div className="flex grow flex-col gap-2">
+        <div className="flex items-center gap-4">
+          <span className="font-bold text-gray-900">
+            {comment.author.nickname}
+          </span>
+          <span className="text-sm text-gray-400">
+            {format(comment.createdAt, 'yyyy년 MM월 dd일')}
+          </span>
         </div>
 
-        <div className="mt-1.5 text-[15px] text-gray-800">{content}</div>
+        <p className="text-gray-800">{comment.content}</p>
       </div>
     </div>
   )

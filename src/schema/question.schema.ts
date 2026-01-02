@@ -14,7 +14,7 @@ const AuthorSchema = z.object({
 const CategorySchema = z.object({
   id: z.number(),
   depth: z.number(),
-  names: z.array(z.string()),
+  names: z.array(z.string()).min(1),
 })
 
 // 이미지 정보 (상세화면용)
@@ -35,22 +35,50 @@ const QuestionBaseSchema = z.object({
 })
 
 // 댓글
-const CommentSchema = z.object({
-  id: z.number(),
-  content: z.string(),
-  created_at: z.string(),
-  author: AuthorSchema,
-})
+const CommentSchema = z
+  .object({
+    id: z.number(),
+    content: z.string(),
+    created_at: z.string(),
+    author: AuthorSchema,
+  })
+  .transform((data) => ({
+    id: data.id,
+    content: data.content,
+    createdAt: new Date(data.created_at),
+    author: {
+      id: data.author.id,
+      nickname: data.author.nickname,
+      profileImageUrl: data.author.profile_image_url,
+    },
+  }))
+
+export type Comment = z.infer<typeof CommentSchema>
 
 // 답변
-const AnswerSchema = z.object({
-  id: z.number(),
-  content: z.string(),
-  created_at: z.string(),
-  is_adopted: z.boolean(),
-  author: AuthorSchema,
-  comments: z.array(CommentSchema),
-})
+const AnswerSchema = z
+  .object({
+    id: z.number(),
+    content: z.string(),
+    created_at: z.string(),
+    is_adopted: z.boolean(),
+    author: AuthorSchema,
+    comments: z.array(CommentSchema),
+  })
+  .transform((data) => ({
+    id: data.id,
+    content: data.content,
+    createdAt: new Date(data.created_at),
+    isAdopted: data.is_adopted,
+    author: {
+      id: data.author.id,
+      nickname: data.author.nickname,
+      profileImageUrl: data.author.profile_image_url,
+    },
+    comments: data.comments,
+  }))
+
+export type Answer = z.infer<typeof AnswerSchema>
 
 // ===============================================================================
 // 조립하여 사용할 스키마 완성
@@ -108,29 +136,7 @@ export const QuestionDetailSchema = QuestionBaseSchema.extend({
   },
 
   // 답변
-  answers: data.answers.map((answer) => ({
-    id: answer.id,
-    content: answer.content,
-    createdAt: new Date(answer.created_at),
-    isAdopted: answer.is_adopted,
-    author: {
-      id: answer.author.id,
-      nickname: answer.author.nickname,
-      profileImageUrl: answer.author.profile_image_url,
-    },
-
-    // 답변의 댓글
-    comments: answer.comments.map((comment) => ({
-      id: comment.id,
-      content: comment.content,
-      createdAt: new Date(comment.created_at),
-      author: {
-        id: comment.author.id,
-        nickname: comment.author.nickname,
-        profileImageUrl: comment.author.profile_image_url,
-      },
-    })),
-  })),
+  answers: data.answers,
 }))
 
 export type QuestionDetail = z.infer<typeof QuestionDetailSchema>
