@@ -21,8 +21,8 @@ jobs:
           API_TOKEN_GITHUB: ${{ secrets.AUTO_ACTIONS }}
         with:
           source-directory: 'output'
-          destination-github-username: oz_externship_fe_05_team4
-          destination-repository-name: juhan0628
+          destination-github-username: juhan0628
+          destination-repository-name: oz_externship_fe_05_team4
           user-email: ${{ secrets.EMAIL }}
           commit-message: ${{ github.event.commits[0].message }}
           target-branch: main
