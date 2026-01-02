@@ -125,7 +125,7 @@ export default function MainPage() {
       </section>
 
       {/*페이지네이션*/}
-      <section className="mt-10 flex justify-center">
+      <section className="mt-10 flex justify-center pb-10">
         <QuestionPagination
           page={page}
           totalPages={totalPages}
@@ -136,19 +136,11 @@ export default function MainPage() {
       {/* 챗봇 테스트용 (임시 / 추후 삭제) */}
       <div className="fixed bottom-6 left-6 z-50 flex flex-col gap-2">
         <button
-          onClick={() => setTestChat({ type: 'followup', questionId: 101 })}
+          onClick={() => setTestChat({ type: 'followup', questionId: 7 })}
           className="rounded bg-purple-600 px-4 py-2 text-sm text-white"
         >
-          추가 질문하기 테스트 (QID: 101)
+          추가 질문하기 테스트
         </button>
-
-        <button
-          onClick={() => setTestChat({ type: 'followup', questionId: 202 })}
-          className="rounded bg-purple-500 px-4 py-2 text-sm text-white"
-        >
-          추가 질문하기 테스트 (QID: 202)
-        </button>
-
         <button
           onClick={() => setTestChat(null)}
           className="rounded bg-gray-300 px-4 py-2 text-sm text-black"
