@@ -7,38 +7,6 @@ import { useQuery } from '@tanstack/react-query'
 import { useNavigate, useParams } from 'react-router'
 import { AvatarFallback } from '@radix-ui/react-avatar'
 
-interface AnswerType {
-  answer_id: number
-  content: string
-  created_at: string
-  is_adopted: boolean
-  author: {
-    nickname: string
-    profile_img_url: string
-  }
-  // 필요한 다른 필드들도 추가하세요
-}
-
-// 2. 전체 질문 데이터 구조 정의
-interface QuestionDetailType {
-  id: number
-  title: string
-  content: string
-  category: {
-    id: number
-    depth: number
-    names: string[] // 문자열 배열로 변경
-  }
-  view_count: number
-  created_at: string
-  author: {
-    id: number
-    nickname: string
-    profile_image_url: string
-  }
-  images: string[]
-}
-
 export default function QuestionDetail() {
   const { id } = useParams()
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated())
@@ -65,15 +33,14 @@ export default function QuestionDetail() {
     },
   })
 
+  // TODO:카테고리 3개이상 나오면
+  const arr = detailData.category.names
+
   // 2. 로딩 및 에러 처리 (데이터가 없을 때 아래 코드가 실행되지 않게 가드)
   if (isLoading) return <div>로딩 중...</div>
   if (isError || !detailData) return <div>에러가 발생했습니다.</div>
 
   // 3. 데이터가 확실히 존재할 때 변수 가공 (useQuery 밖에서 선언!)
-  // 이제 detailData를 마음껏 쓸 수 있습니다.
-  // const questionId = detailData.question_id
-  // TODO:카테고리 3개이상 나오면
-  const arr = detailData.category.names
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
       {/* 1. 상단 브레드크럼  */}
