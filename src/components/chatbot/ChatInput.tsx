@@ -52,8 +52,8 @@ export default function ChatInput({ disabled, onSend }: Props) {
 
         <button
           type="button"
-          disabled={disabled || value.length === 0}
           onClick={handleSubmit}
+          disabled={disabled || value.length === 0}
           className="opacity-40 hover:opacity-60 disabled:opacity-20"
         >
           <img src={Message} alt="send" className="h-3 w-3" />

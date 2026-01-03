@@ -15,5 +15,5 @@ export type ChatMode = 'select' | 'chat'
 export interface CreateChatbotSessionPayload {
   title: string
   using_model: string
-  question?: number
+  Question?: number
 }

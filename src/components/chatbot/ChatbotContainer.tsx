@@ -3,22 +3,12 @@ import ChatbotHome from './ChatbotHome'
 import ChatbotLayout from './ChatbotLayout'
 import type { ChatbotEntry } from '@/types'
 
-type View = 'home' | 'chat'
+export default function ChatbotContainer({ onClose }: { onClose: () => void }) {
+  const [view, setView] = useState<'home' | 'chat'>('home')
+  const [entry, setEntry] = useState<ChatbotEntry>({ type: 'floating' })
 
-export default function ChatbotContainer({
-  initialEntry,
-  onClose,
-}: {
-  initialEntry: ChatbotEntry
-  onClose: () => void
-}) {
-  const [entry, setEntry] = useState<ChatbotEntry>(initialEntry)
-
-  const [view, setView] = useState<View>(
-    initialEntry.type === 'followup' ? 'chat' : 'home'
-  )
   return (
-    <div className="fixed right-6 bottom-24 z-[998] h-[560px] w-[360px] overflow-hidden rounded-[24px] bg-white shadow-2xl">
+    <div className="fixed right-6 bottom-24 z-[998] h-[560px] w-[360px]">
       {view === 'home' && (
         <ChatbotHome
           onClose={onClose}

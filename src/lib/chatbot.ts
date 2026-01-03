@@ -8,10 +8,34 @@ interface CompletionItem {
   id: number
   role: 'user' | 'assistant'
   message: string
+  create_at?: string
 }
 
-interface PaginatedResponse<T> {
+interface CursorResponse<T> {
   results: T[]
+}
+
+export interface ChatbotSessionItem {
+  id: number
+  question: number
+  title: string
+  using_model: string
+}
+
+//세션 조회
+export async function getChatbotSessions(): Promise<ChatbotSessionItem[]> {
+  const res =
+    await api.get<CursorResponse<ChatbotSessionItem>>('/chatbot/sessions')
+  return res.data.results
+}
+
+//questionId로 세션 1개 찾기
+export async function getSessionByQuestionId(
+  questionId: number
+): Promise<number | null> {
+  const sessions = await getChatbotSessions()
+  const found = sessions.find((s) => s.question === questionId)
+  return found ? found.id : null
 }
 
 //세션 생성
@@ -26,58 +50,63 @@ export async function createChatbotSession(
 export async function getChatCompletions(
   sessionId: number
 ): Promise<ChatMessageType[]> {
-  const res = await api.get<PaginatedResponse<CompletionItem>>(
+  const res = await api.get<CursorResponse<CompletionItem>>(
     `/chatbot/sessions/${sessionId}/completions`
   )
+  const items = res.data.results ?? []
 
-  return (res.data?.results ?? []).map((item) => ({
+  //오래된 → 최신 순으로 정렬
+  const sorted = [...items].sort((a, b) => {
+    if (a.create_at && b.create_at) {
+      return new Date(a.create_at).getTime() - new Date(b.create_at).getTime()
+    }
+    return a.id - b.id
+  })
+
+  return sorted.map((item) => ({
     id: item.id,
     role: item.role,
     content: item.message,
   }))
 }
 
-//마지막 세션
-// export async function getLastChatbotSession(): Promise<number | null> {
-//   const res =
-//     await api.get<PaginatedResponse<{ id: number }>>('/chatbot/sessions')
-//   const items = safeResults(res.data)
-//   return items.length ? items[0].id : null
-// }
-
 //SSE
-interface StreamParams {
-  sessionId: number
-  message: string
-  onMessage: (chunk: string) => void
-  onComplete?: () => void
-  onError?: (e: unknown) => void
-}
-
 export function streamChatCompletion({
   sessionId,
   message,
   onMessage,
   onComplete,
   onError,
-}: StreamParams) {
+}: {
+  sessionId: number
+  message: string
+  onMessage: (chunk: string) => void
+  onComplete?: () => void
+  onError?: (e: unknown) => void
+}) {
   const controller = new AbortController()
 
-  fetchEventSource(`${BASE_URL}/chatbot/sessions/${sessionId}/stream`, {
+  //같은 chunk가 중복으로 오는 케이스 방지
+  let lastChunk = ''
+
+  fetchEventSource(`${BASE_URL}/chatbot/sessions/${sessionId}/completions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      // Accept: 'text/event-stream',
+      Accept: '*/*',
       Authorization: `Bearer ${token.get()}`,
     },
     body: JSON.stringify({ message }),
     signal: controller.signal,
 
-    onopen: async (res) => {
-      if (!res.ok) {
-        throw new Error(`SSE failed: ${res.status}`)
-      }
+    async onopen(res) {
+      if (!res.ok) throw new Error(`SSE failed: ${res.status}`)
     },
+
     onmessage(ev) {
+      if (!ev.data) return
+
       if (ev.data === '[DONE]') {
         onComplete?.()
         controller.abort()
@@ -86,9 +115,17 @@ export function streamChatCompletion({
 
       try {
         const data = JSON.parse(ev.data)
-        if (data.delta) onMessage(data.delta)
+
+        //서버가 delta로 주는 케이스 기준
+        const chunk: string = data.delta ?? ''
+
+        //중복 chunk 무시
+        if (!chunk || chunk === lastChunk) return
+        lastChunk = chunk
+
+        onMessage(chunk)
       } catch {
-        //ignore malformed chunk
+        // ignore malformed chunk
       }
     },
 

@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react'
 import chatbotIcon from '@/assets/chatbot.png'
 import { X } from 'lucide-react'
+import { getChatbotSessions, type ChatbotSessionItem } from '@/lib/chatbot'
 
 interface Props {
   onNewChat: () => void
@@ -12,46 +14,53 @@ export default function ChatbotHome({
   onClose,
   onSelectChat,
 }: Props) {
+  const [sessions, setSessions] = useState<ChatbotSessionItem[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    getChatbotSessions()
+      .then(setSessions)
+      .finally(() => setLoading(false))
+  }, [])
+
   return (
     <div className="flex h-full flex-col bg-white">
-      {/* Header */}
       <header className="relative flex h-[64px] items-center justify-center bg-[var(--color-chatbot-primary)] text-white">
         <div className="flex items-center gap-2">
           <img
             src={chatbotIcon}
-            alt="AI OZ"
             className="h-8 w-8 rounded-full bg-white p-1"
           />
           <span className="text-lg font-semibold">AI OZ</span>
         </div>
-
         <button onClick={onClose} className="absolute right-4">
           <X size={20} />
         </button>
       </header>
 
-      {/* New Chat */}
       <div className="p-4">
         <button
           onClick={onNewChat}
-          className="flex w-full items-center justify-center gap-2 rounded-[8px] bg-[var(--color-chatbot-primary)] py-3 text-white"
+          className="w-full rounded-[8px] bg-[var(--color-chatbot-primary)] py-3 text-white"
         >
           + 새 채팅
         </button>
       </div>
 
-      {/* List (임시) */}
-      <ul className="flex-1 divide-y px-4">
-        <li
-          className="flex cursor-pointer items-center gap-3 py-4 hover:bg-[var(--color-gray-100)]"
-          onClick={() => onSelectChat(7)} //테스트용
-        >
-          <img src={chatbotIcon} className="h-8 w-8 rounded-full" />
-          <div className="flex-1">
-            <p className="text-sm font-medium">AND 연산자 사용법</p>
-            <p className="text-xs text-gray-400">방금</p>
-          </div>
-        </li>
+      <ul className="flex-1 divide-y overflow-y-auto px-4">
+        {loading && <li className="py-6 text-center">불러오는 중…</li>}
+
+        {!loading &&
+          sessions.map((s) => (
+            <li
+              key={s.id}
+              onClick={() => onSelectChat(s.question)}
+              className="cursor-pointer py-4 hover:bg-gray-50"
+            >
+              <p className="text-sm font-medium">{s.title}</p>
+              <p className="text-xs text-gray-400">{s.using_model}</p>
+            </li>
+          ))}
       </ul>
     </div>
   )
