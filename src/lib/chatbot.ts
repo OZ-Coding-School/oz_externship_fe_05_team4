@@ -63,24 +63,21 @@ export function streamChatCompletion({
 }: StreamParams) {
   const controller = new AbortController()
 
-  fetchEventSource(`${BASE_URL}}/chatbot/sessions/${sessionId}/stream`, {
+  fetchEventSource(`${BASE_URL}/chatbot/sessions/${sessionId}/stream`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token.get()}`,
     },
     body: JSON.stringify({ message }),
     signal: controller.signal,
 
     onopen: async (res) => {
       if (!res.ok) {
-        throw new Error('SSE connection failed')
+        throw new Error(`SSE failed: ${res.status}`)
       }
     },
-
     onmessage(ev) {
-      if (!ev.data) return
-
       if (ev.data === '[DONE]') {
         onComplete?.()
         controller.abort()
@@ -91,7 +88,7 @@ export function streamChatCompletion({
         const data = JSON.parse(ev.data)
         if (data.delta) onMessage(data.delta)
       } catch {
-        //에러방지
+        //ignore malformed chunk
       }
     },
 
