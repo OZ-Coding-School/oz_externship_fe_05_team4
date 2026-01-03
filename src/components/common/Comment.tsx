@@ -1,6 +1,6 @@
 import { Avatar, AvatarImage } from '@/components/ui'
 import profile from '@/assets/profile.png'
-import type { Comment } from '@/schema/question.schema'
+import type { Comment } from '@/schema/index'
 import { format } from 'date-fns'
 
 export default function Comment({ comment }: { comment: Comment }) {

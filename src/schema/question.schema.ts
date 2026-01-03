@@ -1,15 +1,10 @@
 import { z } from 'zod'
+import { AnswerSchema } from '@/schema/answer.schema'
+import { AuthorSchema } from '@/schema/author.schema'
 
 // 베이스와 각 파츠를 먼저 생성하고 밑에서 조립하여 완성
 
 // 파츠
-// 작성자 정보
-const AuthorSchema = z.object({
-  id: z.number(),
-  nickname: z.string(),
-  profile_image_url: z.url().nullable(),
-})
-
 // 카테고리 정보
 const CategorySchema = z.object({
   id: z.number(),
@@ -34,52 +29,6 @@ const QuestionBaseSchema = z.object({
   category: CategorySchema,
 })
 
-// 댓글
-const CommentSchema = z
-  .object({
-    id: z.number(),
-    content: z.string(),
-    created_at: z.string(),
-    author: AuthorSchema,
-  })
-  .transform((data) => ({
-    id: data.id,
-    content: data.content,
-    createdAt: new Date(data.created_at),
-    author: {
-      id: data.author.id,
-      nickname: data.author.nickname,
-      profileImageUrl: data.author.profile_image_url,
-    },
-  }))
-
-export type Comment = z.infer<typeof CommentSchema>
-
-// 답변
-const AnswerSchema = z
-  .object({
-    id: z.number(),
-    content: z.string(),
-    created_at: z.string(),
-    is_adopted: z.boolean(),
-    author: AuthorSchema,
-    comments: z.array(CommentSchema),
-  })
-  .transform((data) => ({
-    id: data.id,
-    content: data.content,
-    createdAt: new Date(data.created_at),
-    isAdopted: data.is_adopted,
-    author: {
-      id: data.author.id,
-      nickname: data.author.nickname,
-      profileImageUrl: data.author.profile_image_url,
-    },
-    comments: data.comments,
-  }))
-
-export type Answer = z.infer<typeof AnswerSchema>
-
 // ===============================================================================
 // 조립하여 사용할 스키마 완성
 
@@ -98,6 +47,7 @@ export const QuestionListItemSchema = QuestionBaseSchema.extend({
     id: data.author.id,
     nickname: data.author.nickname,
     profileImageUrl: data.author.profile_image_url,
+    role: data.author.role,
   },
   contentPreview: data.content_preview,
   answerCount: data.answer_count,
@@ -133,6 +83,7 @@ export const QuestionDetailSchema = QuestionBaseSchema.extend({
     id: data.author.id,
     nickname: data.author.nickname,
     profileImageUrl: data.author.profile_image_url,
+    role: data.author.role,
   },
 
   // 답변
@@ -142,7 +93,7 @@ export const QuestionDetailSchema = QuestionBaseSchema.extend({
 export type QuestionDetail = z.infer<typeof QuestionDetailSchema>
 
 // 등록 요청
-export const QuestionCreateRequestSchema = z.object({
+export const QuestionCreateFormSchema = z.object({
   title: z
     .string()
     .min(1, '제목을 입력해주세요.')
@@ -151,7 +102,7 @@ export const QuestionCreateRequestSchema = z.object({
   category: z.coerce.number().int().positive('카테고리를 선택해주세요.'),
 })
 
-export type QuestionCreateRequest = z.infer<typeof QuestionCreateRequestSchema>
+export type QuestionCreateForm = z.infer<typeof QuestionCreateFormSchema>
 
 // 등록 응답
 export const QuestionCreateResponseSchema = z
@@ -170,11 +121,9 @@ export type QuestionCreateResponse = z.infer<
 
 // (등록 요청, 상세 조회와 동일하지만 나중에 변경시 수정하기도 수월하고, 현재도 더 명시적으로 분리)
 // 수정 요청
-export const QuestionEditRequestSchema = QuestionCreateRequestSchema
-
-export type QuestionEditRequest = z.infer<typeof QuestionEditRequestSchema>
+export const QuestionEditFormSchema = QuestionCreateFormSchema
+export type QuestionEditForm = z.infer<typeof QuestionEditFormSchema>
 
 // 수정 응답
 export const QuestionEditResponseSchema = QuestionDetailSchema
-
 export type QuestionEditResponse = z.infer<typeof QuestionEditResponseSchema>
