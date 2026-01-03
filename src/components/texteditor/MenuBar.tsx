@@ -1,5 +1,5 @@
 import type { Editor } from '@tiptap/core'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import DesktopToolbar from './toolbar/DesktopToolbar'
 import MobileToolbar from './toolbar/MobileToolbar'
 import {
@@ -15,13 +15,37 @@ type MenuBarProps = {
   onUploadImages?: (files: File[]) => Promise<void>
 }
 
+const DEFAULT_TEXT_COLOR = '#111827'
+const DEFAULT_BG_COLOR = ''
+
 export default function MenuBar({ editor, onUploadImages }: MenuBarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [font, setFont] = useState('')
   const [size, setSize] = useState('16')
-  const [textColor, setTextColor] = useState('#111827')
-  const [bgColor, setBgColor] = useState('#DBEAFE')
+  const [textColor, setTextColor] = useState(DEFAULT_TEXT_COLOR)
+  const [bgColor, setBgColor] = useState(DEFAULT_BG_COLOR)
+
+  useEffect(() => {
+    if (!editor) return
+
+    const sync = () => {
+      const tc = (editor.getAttributes('textStyle')?.color as string) ?? ''
+      const bc = (editor.getAttributes('highlight')?.color as string) ?? ''
+
+      setTextColor(tc || DEFAULT_TEXT_COLOR)
+      setBgColor(bc || DEFAULT_BG_COLOR)
+    }
+
+    sync()
+    editor.on('selectionUpdate', sync)
+    editor.on('transaction', sync)
+
+    return () => {
+      editor.off('selectionUpdate', sync)
+      editor.off('transaction', sync)
+    }
+  }, [editor])
 
   if (!editor) return null
 
@@ -38,15 +62,30 @@ export default function MenuBar({ editor, onUploadImages }: MenuBarProps) {
     setSize(v)
     editor.chain().focus().setFontSize(`${v}px`).run()
   }
+  const toggleTextColor = (c: string) => {
+    const current = (editor.getAttributes('textStyle')?.color as string) ?? ''
 
-  const applyTextColor = (c: string) => {
-    setTextColor(c)
+    if (current === c) {
+      editor.chain().focus().unsetColor().run()
+      setTextColor(DEFAULT_TEXT_COLOR)
+      return
+    }
+
     editor.chain().focus().setColor(c).run()
+    setTextColor(c)
   }
 
-  const applyBgColor = (c: string) => {
-    setBgColor(c)
+  const toggleBgColor = (c: string) => {
+    const current = (editor.getAttributes('highlight')?.color as string) ?? ''
+
+    if (current === c) {
+      editor.chain().focus().unsetHighlight().run()
+      setBgColor(DEFAULT_BG_COLOR)
+      return
+    }
+
     editor.chain().focus().setHighlight({ color: c }).run()
+    setBgColor(c)
   }
 
   const applyLineHeight = (v: string) => {
@@ -105,8 +144,10 @@ export default function MenuBar({ editor, onUploadImages }: MenuBarProps) {
     lineHeights,
     onFontChange: applyFont,
     onSizeChange: applySize,
-    onTextColor: applyTextColor,
-    onBgColor: applyBgColor,
+
+    onTextColor: toggleTextColor,
+    onBgColor: toggleBgColor,
+
     onLineHeight: applyLineHeight,
     onInsertLink: insertLinkAsText,
     onOpenImagePicker: openImagePicker,

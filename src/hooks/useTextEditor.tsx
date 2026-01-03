@@ -18,14 +18,27 @@ export const useTextEditor = (args?: UseTextEditorArgs) =>
   useEditor({
     content: args?.content ?? '',
     onUpdate: args?.onUpdate,
+
+    editorProps: {
+      attributes: {
+        class: 'font-sans text-[16px] leading-6 text-gray-900 outline-none',
+      },
+    },
+
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        hardBreak: { keepMarks: true },
+      }),
+
       Highlight.configure({ multicolor: true }),
       Underline,
+
       TextStyle,
       Color.configure({ types: ['textStyle'] }),
       FontFamily.configure({ types: ['textStyle'] }),
+
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
+
       Link.configure({
         openOnClick: false,
         autolink: true,
@@ -35,7 +48,9 @@ export const useTextEditor = (args?: UseTextEditorArgs) =>
           target: '_blank',
         },
       }),
+
       Image,
+
       FontSize,
       LineHeight,
       Indent,

@@ -23,6 +23,9 @@ export default function ColorControls({
 }: Props) {
   void editor
 
+  const chipBase = 'h-7 w-7 rounded border border-[#CECECE] shrink-0'
+  const selectedRing = 'ring-2 ring-blue-500'
+
   return (
     <div className="flex items-center gap-2">
       {/* 배경색 */}
@@ -35,7 +38,7 @@ export default function ColorControls({
             <Highlighter size={18} />
             <span
               className="h-4 w-4 rounded border border-[#CECECE]"
-              style={{ backgroundColor: bgColor }}
+              style={{ backgroundColor: bgColor || '#FFFFFF' }}
             />
             <ChevronDown size={16} className="text-gray-600" />
           </button>
@@ -48,7 +51,9 @@ export default function ColorControls({
                 <button
                   key={c}
                   type="button"
-                  className="h-7 w-7 rounded border border-[#CECECE]"
+                  className={[chipBase, bgColor === c ? selectedRing : ''].join(
+                    ' '
+                  )}
                   style={{ backgroundColor: c }}
                   onClick={() => onBgColor(c)}
                 />
@@ -81,7 +86,10 @@ export default function ColorControls({
                 <button
                   key={c}
                   type="button"
-                  className="h-7 w-7 rounded border border-[#CECECE]"
+                  className={[
+                    chipBase,
+                    textColor === c ? selectedRing : '',
+                  ].join(' ')}
                   style={{ backgroundColor: c }}
                   onClick={() => onTextColor(c)}
                 />

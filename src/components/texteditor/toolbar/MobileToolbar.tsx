@@ -1,5 +1,6 @@
 import type { Editor } from '@tiptap/core'
 import { ChevronDown, MoreHorizontal, Strikethrough } from 'lucide-react'
+import { useState } from 'react'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { Group, Hr, SectionTitle, Divider, IconBtn } from './ToolbarPrimitives'
 import HistoryControls from './HistoryControls'
@@ -52,6 +53,18 @@ export default function MobileToolbar({
   onInsertLink,
   onOpenImagePicker,
 }: Props) {
+  const [moreOpen, setMoreOpen] = useState(false)
+
+  const handleInsertLink = () => {
+    setMoreOpen(false)
+    onInsertLink()
+  }
+
+  const handleOpenImagePicker = () => {
+    setMoreOpen(false)
+    onOpenImagePicker()
+  }
+
   return (
     <div className="px-4 py-1">
       <div className="flex items-center gap-1">
@@ -64,7 +77,7 @@ export default function MobileToolbar({
         </Group>
 
         <Group withDivider={false}>
-          <DropdownMenu.Root>
+          <DropdownMenu.Root open={moreOpen} onOpenChange={setMoreOpen}>
             <DropdownMenu.Trigger asChild>
               <button
                 type="button"
@@ -76,7 +89,7 @@ export default function MobileToolbar({
             </DropdownMenu.Trigger>
 
             <DropdownMenu.Portal>
-              <DropdownMenu.Content className="z-50 w-[320px] rounded border bg-white p-2 shadow">
+              <DropdownMenu.Content className="z-50 max-h-[70vh] w-[320px] overflow-y-auto rounded border bg-white p-2 shadow">
                 <SectionTitle>폰트</SectionTitle>
                 <div className="mt-1">
                   <FontControls
@@ -118,8 +131,8 @@ export default function MobileToolbar({
                 <SectionTitle>삽입</SectionTitle>
                 <div className="mt-1 flex items-center gap-1">
                   <InsertControls
-                    onInsertLink={onInsertLink}
-                    onOpenImagePicker={onOpenImagePicker}
+                    onInsertLink={handleInsertLink}
+                    onOpenImagePicker={handleOpenImagePicker}
                   />
                 </div>
 
