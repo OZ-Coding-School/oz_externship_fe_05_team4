@@ -1,38 +1,53 @@
 import { api } from '@/lib'
-import type { AnswerCreateForm, AnswerEditForm } from '@/schema/index'
+import {
+  AnswerCreateResponseSchema,
+  AnswerEditResponseSchema,
+  type AnswerCreateForm,
+  type AnswerCreateResponse,
+  type AnswerEditForm,
+  type AnswerEditResponse,
+} from '@/schema/index'
 
 // 답변 등록
-const postAnswer = async (question_id: number, answer: AnswerCreateForm) => {
+const postAnswer = async (
+  questionId: number,
+  answer: AnswerCreateForm
+): Promise<AnswerCreateResponse> => {
   const response = await api.post(
-    `/qna/questions/${question_id}/answers`,
+    `/qna/questions/${questionId}/answers`,
     answer
   )
 
-  // TODO: AnswerResponse 예시
-  // {
-  //   "answer_id": 801,
-  //   "question_id": 10501,
-  //   "author_id": 211,
-  //   "created_at": "2025-03-02 11:43:20"
-  // }
-  return response.data
+  // TODO: 에러 처리 (그럴일은 없더라도)
+  return AnswerCreateResponseSchema.parse(response.data)
 }
 
 // 답변 수정
-const editAnswer = async (answer_id: number, answer: AnswerEditForm) => {
-  const response = await api.put(`/qna/answers/${answer_id}`, answer)
+const editAnswer = async (
+  questionId: number,
+  answerId: number,
+  answer: AnswerEditForm
+): Promise<AnswerEditResponse> => {
+  const response = await api.put(
+    `/qna/questions/${questionId}/answers/${answerId}`,
+    answer
+  )
 
-  // TODO: AnswerEditResponse 예시
-  // {
-  //   "answer_id": 801,
-  //   "updated_at": "2025-03-02 11:43:20"
-  // }
-  return response.data
+  // TODO: 에러 처리 (그럴일은 없더라도)
+  return AnswerEditResponseSchema.parse(response.data)
+}
+
+// 답변 삭제
+const deleteAnswer = async (
+  questionId: number,
+  answerId: number
+): Promise<void> => {
+  await api.delete(`/qna/questions/${questionId}/answers/${answerId}`)
 }
 
 // 답변 채택
-const acceptAnswer = async (answer_id: number) => {
-  const response = await api.post(`/qna/answers/${answer_id}/accept`)
+const acceptAnswer = async (answerId: number) => {
+  const response = await api.post(`/qna/answers/${answerId}/accept`)
 
   // TODO: AnswerAcceptResponse 예시
   // {
@@ -44,8 +59,8 @@ const acceptAnswer = async (answer_id: number) => {
 }
 
 // AI 답변 생성
-const generateAiAnswer = async (question_id: number) => {
-  const response = await api.get(`/qna/questions/${question_id}/ai-answers`)
+const generateAiAnswer = async (questionId: number) => {
+  const response = await api.get(`/qna/questions/${questionId}/ai-answers`)
 
   // TODO: AiAnswerResponse 예시
   // {
@@ -58,4 +73,4 @@ const generateAiAnswer = async (question_id: number) => {
   return response.data
 }
 
-export { postAnswer, editAnswer, acceptAnswer, generateAiAnswer }
+export { postAnswer, editAnswer, deleteAnswer, acceptAnswer, generateAiAnswer }

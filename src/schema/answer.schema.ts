@@ -76,9 +76,4 @@ export const AnswerEditResponseSchema = z
 
 export type AnswerEditResponse = z.infer<typeof AnswerEditResponseSchema>
 
-// 답변 삭제 요청
-export const AnswerDeleteFormSchema = z.object({
-  answer_id: z.number().int().positive(),
-})
-
-export type AnswerDeleteForm = z.infer<typeof AnswerDeleteFormSchema>
+// TODO: AI 답변 생성 응답 (아직 UI & API 없음)
