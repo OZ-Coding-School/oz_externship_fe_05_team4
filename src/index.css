@@ -20,6 +20,14 @@
   --color-gray-disabled: #bdbdbd;
   --color-gray-primary: #121212;
 
+  /*챗봇 색상*/
+  --color-chatbot-primary: #7c35d9;
+  --color-chatbot-text: #f2effd;
+  --color-chatbot-layer: #d0b3f6;
+  --color-chatbot-input-bg: #f2f2f7;
+  --color-chatbot-input-border: #cecece;
+  --color-chatbot-bot-bg: #f5f5f5;
+
   --color-success: #04c73d;
   --color-white: #ffffff;
   --color-black: #000000;

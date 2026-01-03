@@ -26,7 +26,7 @@ export default function Header() {
 
   return (
     <header className="w-full">
-      <div className="flex h-12 w-full items-center justify-center bg-black px-[10px]">
+      <div className="flex h-8 w-full items-center justify-center bg-black">
         <p className="text-sm font-medium text-gray-300">
           🔥 실시간 고민·질문자별 답글 4초 안에 확인
         </p>
@@ -36,17 +36,20 @@ export default function Header() {
         <div className="mx-auto flex h-14 w-full max-w-[960px] items-center justify-between px-6">
           {/* LEFT */}
           <div className="flex items-center gap-8">
-            <Link
-              to="/"
+            <a
+              href="https://my.ozcodingschool.site/"
               className="text-gray-primary text-base font-extrabold tracking-tight"
             >
               OZ 오즈코딩스쿨
-            </Link>
+            </a>
 
             <nav className="flex items-center gap-6 text-sm font-medium text-gray-700">
-              <Link to="/community" className="hover:text-black">
+              <a
+                href="https://community.ozcodingschool.site/"
+                className="hover:text-black"
+              >
                 커뮤니티
-              </Link>
+              </a>
               <Link to="/" className="hover:text-black">
                 질의응답
               </Link>
@@ -57,13 +60,19 @@ export default function Header() {
           {!isAuthenticated ? (
             <div className="flex items-center gap-3 text-sm text-gray-700">
               <Login />
-              <Link to="/login" className="hover:text-black">
+              <a
+                href="https://my.ozcodingschool.site/"
+                className="hover:text-black"
+              >
                 로그인
-              </Link>
+              </a>
               <span className="text-gray-400">|</span>
-              <Link to="/signup" className="hover:text-black">
+              <a
+                href="https://my.ozcodingschool.site/"
+                className="hover:text-black"
+              >
                 회원가입
-              </Link>
+              </a>
             </div>
           ) : (
             <DropdownMenu>
