@@ -1,17 +1,10 @@
 import { z } from 'zod'
-import { AnswerSchema } from '@/schema/index'
+import { AnswerSchema } from '@/schema/answer.schema'
+import { AuthorSchema } from '@/schema/author.schema'
 
 // 베이스와 각 파츠를 먼저 생성하고 밑에서 조립하여 완성
 
 // 파츠
-// 작성자 정보
-export const AuthorSchema = z.object({
-  id: z.number(),
-  nickname: z.string(),
-  profile_image_url: z.url().nullable(),
-  role: z.enum(['TA', 'LC', 'OM', 'ST', 'AD', 'U']).optional(),
-})
-
 // 카테고리 정보
 const CategorySchema = z.object({
   id: z.number(),

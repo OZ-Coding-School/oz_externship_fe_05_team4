@@ -1,5 +1,5 @@
 import z from 'zod'
-import { AuthorSchema } from '@/schema/index'
+import { AuthorSchema } from '@/schema/author.schema'
 
 // 댓글
 export const CommentSchema = z

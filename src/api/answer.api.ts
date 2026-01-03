@@ -1,7 +1,8 @@
 import { api } from '@/lib'
+import type { AnswerCreateForm, AnswerEditForm } from '@/schema/index'
 
 // 답변 등록
-const postAnswer = async (question_id: number, answer: AnswerRequest) => {
+const postAnswer = async (question_id: number, answer: AnswerCreateForm) => {
   const response = await api.post(
     `/qna/questions/${question_id}/answers`,
     answer
@@ -18,7 +19,7 @@ const postAnswer = async (question_id: number, answer: AnswerRequest) => {
 }
 
 // 답변 수정
-const editAnswer = async (answer_id: number, answer: AnswerRequest) => {
+const editAnswer = async (answer_id: number, answer: AnswerEditForm) => {
   const response = await api.put(`/qna/answers/${answer_id}`, answer)
 
   // TODO: AnswerEditResponse 예시
