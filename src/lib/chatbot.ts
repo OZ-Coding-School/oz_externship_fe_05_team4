@@ -1,153 +1,105 @@
-import type { ChatMessageType } from '@/types'
-import axios from 'axios'
-import { token } from '@/lib/auth.token'
+import type { ChatMessageType, CreateChatbotSessionPayload } from '@/types'
+import { api } from '@/lib/api'
+import { fetchEventSource } from '@microsoft/fetch-event-source'
+import { token } from './'
+import { BASE_URL } from '@/data'
 
-//타입
-interface ChatSession {
+interface CompletionItem {
   id: number
+  role: 'user' | 'assistant'
+  message: string
 }
 
-//axios 인스턴스
-const api = axios.create({
-  baseURL: '',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-})
-
-function authHeader() {
-  const accessToken = token.get()
-  if (!accessToken) {
-    throw new Error('NO_ACCESS_TOKEN')
-  }
-
-  return {
-    Authorization: `Bearer ${accessToken}`,
-  }
+interface PaginatedResponse<T> {
+  results: T[]
 }
 
 //세션 생성
 export async function createChatbotSession(
-  questionId?: number
+  payload: CreateChatbotSessionPayload
 ): Promise<number> {
-  const res = await api.post<{ id: number }>(
-    '/chatbot/sessions',
-    questionId ? { question_id: questionId } : {},
-    { headers: authHeader() }
-  )
-
+  const res = await api.post('/chatbot/sessions', payload)
   return res.data.id
 }
 
-//이전 대화 불러오기
+//이전 대화 목록 조회
 export async function getChatCompletions(
   sessionId: number
 ): Promise<ChatMessageType[]> {
-  const res = await api.get<{
-    results?: {
-      id: number
-      role: 'user' | 'assistant'
-      message: string
-    }[]
-  }>(`/chatbot/sessions/${sessionId}/completions`, {
-    headers: authHeader(),
-  })
+  const res = await api.get<PaginatedResponse<CompletionItem>>(
+    `/chatbot/sessions/${sessionId}/completions`
+  )
 
-  const results = res.data?.results
-
-  if (!Array.isArray(results)) return []
-
-  return results.map((item) => ({
+  return (res.data?.results ?? []).map((item) => ({
     id: item.id,
     role: item.role,
     content: item.message,
   }))
 }
 
-//마지막 세션 조회
-export async function getLastChatbotSession(): Promise<number | null> {
-  const res = await api.get<ChatSession[]>('/chatbot/sessions', {
-    headers: authHeader(),
-  })
+//마지막 세션
+// export async function getLastChatbotSession(): Promise<number | null> {
+//   const res =
+//     await api.get<PaginatedResponse<{ id: number }>>('/chatbot/sessions')
+//   const items = safeResults(res.data)
+//   return items.length ? items[0].id : null
+// }
 
-  if (!res.data.length) return null
-  return res.data[0].id
-}
-
-// SSE 스트리밍
+//SSE
 interface StreamParams {
   sessionId: number
   message: string
-  assistantId: number
-  setMessages: React.Dispatch<React.SetStateAction<ChatMessageType[]>>
+  onMessage: (chunk: string) => void
+  onComplete?: () => void
+  onError?: (e: unknown) => void
 }
 
-interface StreamChunk {
-  contents: string
-}
-
-export async function streamChatCompletion({
+export function streamChatCompletion({
   sessionId,
   message,
-  assistantId,
-  setMessages,
-}: StreamParams): Promise<void> {
-  const accessToken = token.get()
-  if (!accessToken) throw new Error('NO_ACCESS_TOKEN')
+  onMessage,
+  onComplete,
+  onError,
+}: StreamParams) {
+  const controller = new AbortController()
 
-  const res = await fetch(`/chatbot/sessions/${sessionId}/completions`, {
+  fetchEventSource(`${BASE_URL}}/chatbot/sessions/${sessionId}/stream`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${accessToken}`,
       'Content-Type': 'application/json',
-      Accept: 'text/event-stream',
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ message }),
-  })
+    signal: controller.signal,
 
-  if (!res.ok || !res.body) {
-    throw new Error('SSE_FAILED')
-  }
+    onopen: async (res) => {
+      if (!res.ok) {
+        throw new Error('SSE connection failed')
+      }
+    },
 
-  const reader = res.body.getReader()
-  const decoder = new TextDecoder()
+    onmessage(ev) {
+      if (!ev.data) return
 
-  let buffer = ''
-  let acc = ''
-
-  while (true) {
-    const { value, done } = await reader.read()
-    if (done) break
-
-    buffer += decoder.decode(value, { stream: true })
-
-    const lines = buffer.split('\n')
-    buffer = lines.pop() ?? ''
-
-    for (let line of lines) {
-      line = line.trim()
-      if (!line.startsWith('data:')) continue
-
-      const payload = line.replace(/^data:\s*/, '').trim()
-      if (!payload) continue
-      if (payload === '[DONE]') return
+      if (ev.data === '[DONE]') {
+        onComplete?.()
+        controller.abort()
+        return
+      }
 
       try {
-        const parsed = JSON.parse(payload) as StreamChunk
-        const next = parsed.contents ?? ''
-
-        if (next.startsWith(acc)) {
-          acc = next
-        } else {
-          acc += next
-        }
-
-        setMessages((prev) =>
-          prev.map((m) => (m.id === assistantId ? { ...m, content: acc } : m))
-        )
+        const data = JSON.parse(ev.data)
+        if (data.delta) onMessage(data.delta)
       } catch {
-        continue
+        //에러방지
       }
-    }
-  }
+    },
+
+    onerror(err) {
+      controller.abort()
+      onError?.(err)
+    },
+  })
+
+  return () => controller.abort()
 }

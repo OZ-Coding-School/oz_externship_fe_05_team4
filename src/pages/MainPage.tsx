@@ -10,12 +10,12 @@ import QuestionCard from '@/components/questions/QuestionCard'
 import QuestionPagination from '@/components/questions/QuestionPagination'
 import CategoryFilterModal from '@/components/filter/CategoryFilterModal'
 import ChatbotFloatingButton from '@/components/chatbot/ChatbotFloatingButton'
-import ChatbotLayout from '@/components/chatbot/ChatbotLayout'
 
 import { useQuestions } from '@/hooks/useQuestions'
 import { useSessionState } from '@/hooks/useSessionState'
 import { useEffect, useState } from 'react'
 import type { CategoryValue } from '@/types'
+import ChatbotContainer from '@/components/chatbot/ChatbotContainer'
 
 export default function MainPage() {
   // 챗봇 테스트용으로 생성 추후 삭제
@@ -136,11 +136,14 @@ export default function MainPage() {
       {/* 챗봇 테스트용 (임시 / 추후 삭제) */}
       <div className="fixed bottom-6 left-6 z-50 flex flex-col gap-2">
         <button
-          onClick={() => setTestChat({ type: 'followup', questionId: 7 })}
-          className="rounded bg-purple-600 px-4 py-2 text-sm text-white"
+          onClick={
+            () => setTestChat({ type: 'followup', questionId: 7 }) // 테스트용 ID
+          }
+          className="rounded bg-[var(--color-chatbot-primary)] px-4 py-2 text-white"
         >
-          추가 질문하기 테스트
+          추가질문하기
         </button>
+
         <button
           onClick={() => setTestChat(null)}
           className="rounded bg-gray-300 px-4 py-2 text-sm text-black"
@@ -149,7 +152,12 @@ export default function MainPage() {
         </button>
       </div>
 
-      {testChat && <ChatbotLayout entry={testChat} />}
+      {testChat && (
+        <ChatbotContainer
+          initialEntry={testChat}
+          onClose={() => setTestChat(null)}
+        />
+      )}
 
       {isFilterOpen && (
         <CategoryFilterModal
