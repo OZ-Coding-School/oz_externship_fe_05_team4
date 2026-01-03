@@ -1,7 +1,9 @@
 import { api } from '@/lib'
 import {
+  AnswerAdoptResponseSchema,
   AnswerCreateResponseSchema,
   AnswerEditResponseSchema,
+  type AnswerAdoptResponse,
   type AnswerCreateForm,
   type AnswerCreateResponse,
   type AnswerEditForm,
@@ -46,16 +48,16 @@ const deleteAnswer = async (
 }
 
 // 답변 채택
-const acceptAnswer = async (answerId: number) => {
-  const response = await api.post(`/qna/answers/${answerId}/accept`)
+const acceptAnswer = async (
+  questionId: number,
+  answerId: number
+): Promise<AnswerAdoptResponse> => {
+  const response = await api.post(
+    `/qna/questions/${questionId}/answers/${answerId}/adopt`
+  )
 
-  // TODO: AnswerAcceptResponse 예시
-  // {
-  //   "question_id": 10501,
-  //   "answer_id": 801,
-  //   "is_adopted": true
-  // }
-  return response.data
+  // TODO: 에러 처리 (그럴일은 없더라도)
+  return AnswerAdoptResponseSchema.parse(response.data)
 }
 
 // AI 답변 생성
