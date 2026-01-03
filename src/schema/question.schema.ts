@@ -242,3 +242,33 @@ export type AnswerDeleteForm = z.infer<typeof AnswerDeleteFormSchema>
 // 댓글
 
 // 댓글 등록 요청
+export const CommentCreateFormSchema = z.object({
+  content: z.string().min(1, '내용을 입력해주세요.'),
+})
+
+export type CommentCreateForm = z.infer<typeof CommentCreateFormSchema>
+
+// 댓글 등록 응답
+export const CommentCreateResponseSchema = z
+  .object({
+    comment_id: z.number().int().positive(),
+    answer_id: z.number().int().positive(),
+    author_id: z.number().int().positive(),
+    created_at: z.string(),
+  })
+  .transform((data) => ({
+    id: data.comment_id,
+    answerId: data.answer_id,
+    authorId: data.author_id,
+    createdAt: new Date(data.created_at),
+  }))
+
+export type CommentCreateResponse = z.infer<typeof CommentCreateResponseSchema>
+
+// 댓글 수정 요청
+export const CommentEditFormSchema = CommentCreateFormSchema
+export type CommentEditForm = z.infer<typeof CommentEditFormSchema>
+
+// 댓글 수정 응답
+export const CommentEditResponseSchema = CommentSchema
+// 타입은 그냥 Comment
