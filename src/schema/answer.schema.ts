@@ -77,7 +77,7 @@ export const AnswerEditResponseSchema = z
 export type AnswerEditResponse = z.infer<typeof AnswerEditResponseSchema>
 
 // 답변 채택 응답
-export const AnswerAdoptResponse = z
+export const AnswerAdoptResponseSchema = z
   .object({
     question_id: z.number().int().positive(),
     answer_id: z.number().int().positive(),
@@ -89,6 +89,6 @@ export const AnswerAdoptResponse = z
     isAdopted: data.is_adopted,
   }))
 
-export type AnswerAdoptResponse = z.infer<typeof AnswerAdoptResponse>
+export type AnswerAdoptResponse = z.infer<typeof AnswerAdoptResponseSchema>
 
 // TODO: AI 답변 생성 응답 (아직 UI & API 없음)

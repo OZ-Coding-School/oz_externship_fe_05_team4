@@ -11,10 +11,13 @@ import {
 } from '@/schema/index'
 
 // 답변 등록
-const postAnswer = async (
-  questionId: number,
+const postAnswer = async ({
+  questionId,
+  answer,
+}: {
+  questionId: number
   answer: AnswerCreateForm
-): Promise<AnswerCreateResponse> => {
+}): Promise<AnswerCreateResponse> => {
   const response = await api.post(
     `/qna/questions/${questionId}/answers`,
     answer
@@ -25,11 +28,15 @@ const postAnswer = async (
 }
 
 // 답변 수정
-const editAnswer = async (
-  questionId: number,
-  answerId: number,
+const editAnswer = async ({
+  questionId,
+  answerId,
+  answer,
+}: {
+  questionId: number
+  answerId: number
   answer: AnswerEditForm
-): Promise<AnswerEditResponse> => {
+}): Promise<AnswerEditResponse> => {
   const response = await api.put(
     `/qna/questions/${questionId}/answers/${answerId}`,
     answer
@@ -40,18 +47,24 @@ const editAnswer = async (
 }
 
 // 답변 삭제
-const deleteAnswer = async (
-  questionId: number,
+const deleteAnswer = async ({
+  questionId,
+  answerId,
+}: {
+  questionId: number
   answerId: number
-): Promise<void> => {
+}): Promise<void> => {
   await api.delete(`/qna/questions/${questionId}/answers/${answerId}`)
 }
 
 // 답변 채택
-const acceptAnswer = async (
-  questionId: number,
+const acceptAnswer = async ({
+  questionId,
+  answerId,
+}: {
+  questionId: number
   answerId: number
-): Promise<AnswerAdoptResponse> => {
+}): Promise<AnswerAdoptResponse> => {
   const response = await api.post(
     `/qna/questions/${questionId}/answers/${answerId}/adopt`
   )
