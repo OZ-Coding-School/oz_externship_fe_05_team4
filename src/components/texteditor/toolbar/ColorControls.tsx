@@ -28,14 +28,14 @@ export default function ColorControls({
 
   return (
     <div className="flex items-center gap-2">
-      {/* 배경색 */}
+      {/* 배경 색 */}
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
           <button
             type="button"
             className="flex h-8 shrink-0 items-center gap-2 rounded px-2 hover:bg-gray-100"
           >
-            <Highlighter size={18} />
+            <Palette size={18} />
             <span
               className="h-4 w-4 rounded border border-[#CECECE]"
               style={{ backgroundColor: bgColor || '#FFFFFF' }}
@@ -63,14 +63,14 @@ export default function ColorControls({
         </DropdownMenu.Portal>
       </DropdownMenu.Root>
 
-      {/* 글자색 */}
+      {/* 글자 색 */}
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
           <button
             type="button"
             className="flex h-8 shrink-0 items-center gap-2 rounded px-2 hover:bg-gray-100"
           >
-            <Palette size={18} />
+            <Highlighter size={18} />
             <span
               className="h-4 w-4 rounded border border-[#CECECE]"
               style={{ backgroundColor: textColor }}
