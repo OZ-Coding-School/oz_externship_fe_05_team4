@@ -1,7 +1,7 @@
 import { Button, Card, Textarea, Avatar, AvatarImage } from '@/components/ui'
 import { ArrowUpDown, MessageCircle } from 'lucide-react'
 import Comment from '@/components/common/Comment'
-import type { Answer } from '@/schema/question.schema'
+import type { Answer } from '@/schema/index'
 import type { User } from '@/types/user'
 import { useAuthStore } from '@/store/auth.store'
 import { timeAgo } from '@/utils/date'
