@@ -58,7 +58,7 @@ const deleteAnswer = async ({
 }
 
 // 답변 채택
-const acceptAnswer = async ({
+const adoptAnswer = async ({
   questionId,
   answerId,
 }: {
@@ -88,4 +88,4 @@ const generateAiAnswer = async (questionId: number) => {
   return response.data
 }
 
-export { postAnswer, editAnswer, deleteAnswer, acceptAnswer, generateAiAnswer }
+export { postAnswer, editAnswer, deleteAnswer, adoptAnswer, generateAiAnswer }

@@ -55,4 +55,4 @@ export type CommentEditForm = z.infer<typeof CommentEditFormSchema>
 
 // 댓글 수정 응답
 export const CommentEditResponseSchema = CommentSchema
-// 타입은 그냥 Comment
+// 응답 타입은 그냥 Comment

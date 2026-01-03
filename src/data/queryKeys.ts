@@ -10,17 +10,18 @@ export const queryKeys = {
   detail: (questionId: number) => [...queryKeys.details(), questionId] as const,
 
   // 답변
-  answers: (questionId: number) =>
-    [...queryKeys.detail(questionId), 'answers'] as const,
-  answer: (questionId: number, answerId: number) =>
-    [...queryKeys.answers(questionId), answerId] as const,
+  // answers: (questionId: number) =>
+  //   [...queryKeys.detail(questionId), 'answers'] as const,
+  // answer: (questionId: number, answerId: number) =>
+  //   [...queryKeys.answers(questionId), answerId] as const,
 
   // 댓글
-  comments: (questionId: number, answerId: number) =>
-    [...queryKeys.answers(questionId), answerId, 'comments'] as const,
-  comment: (questionId: number, answerId: number, commentId: number) =>
-    [...queryKeys.comments(questionId, answerId), commentId] as const,
+  // comments: (questionId: number, answerId: number) =>
+  //   [...queryKeys.answers(questionId), answerId, 'comments'] as const,
+  // comment: (questionId: number, answerId: number, commentId: number) =>
+  //   [...queryKeys.comments(questionId, answerId), commentId] as const,
 
+  // TODO: 아직 API 없음. 구현할건지, 하게되면 이 데이터가 질문 상세에도 오는지, 따로 페칭해야하는지 확인하기
   // AI 답변 (질문당 1개)
   aiAnswer: (questionId: number) =>
     [...queryKeys.detail(questionId), 'ai-answer'] as const,
@@ -35,6 +36,9 @@ export const queryKeys = {
 }
 
 // 현재 질문당 1개의 세션만 생성 가능하지만, 여전히 세션 id는 필요하므로 이 구조를 그대로 따릅니다!
+
+// 현재 답변과 댓글의 목록이나 상세조회를 하지 않으므로, 일단 주석처리
+// 나중에 사용하게 될 경우에 주석 해제하여 사용
 
 // (참고) 쿼리 키 구조 시각화
 // ['questions']
