@@ -1,5 +1,5 @@
 import { Avatar, AvatarImage } from '@/components/ui/Avatar'
-import { Button, Card } from '@/components/ui'
+import { Button } from '@/components/ui/index'
 import { ChevronRight, Link } from 'lucide-react'
 import { useAuthStore } from '@/store'
 import { useNavigate, useParams } from 'react-router'
@@ -8,6 +8,7 @@ import type { Answer as AnswerType } from '@/schema/index'
 import Answer from '@/components/answer/Answer'
 import profile from '@/assets/profile.png'
 import { timeAgo } from '@/utils/date'
+import AnswerForm from '@/components/answer/AnswerForm'
 
 export default function QuestionDetail() {
   const { id } = useParams()
@@ -24,6 +25,8 @@ export default function QuestionDetail() {
     ...(question?.answers.filter((answer) => answer.isAdopted) ?? []),
     ...(question?.answers.filter((answer) => !answer.isAdopted) ?? []),
   ]
+
+  const canAnswer = isAuthenticated && user?.id !== question?.author.id
 
   // TODO: 로딩 중, 에러 처리 (Suspense & Error Boundary?)
   if (isLoading) return <div>로딩 중...</div>
@@ -105,28 +108,7 @@ export default function QuestionDetail() {
       </div>
 
       {/* 답변하기 */}
-      {isAuthenticated && user?.id !== question.author.id && (
-        <Card className="mb-12 flex items-center justify-between rounded-3xl border-gray-200 p-9">
-          <div className="flex items-center gap-4">
-            <Avatar className="h-12 w-12 overflow-hidden rounded-full">
-              <AvatarImage src={question.author.profileImageUrl ?? profile} />
-            </Avatar>
-
-            <div className="flex flex-col">
-              <span className="text-primary text-sm font-medium">
-                {question.author.nickname} 님,
-              </span>
-              <span className="font-semibold text-gray-800">
-                정보를 공유해 주세요.
-              </span>
-            </div>
-          </div>
-
-          <Button className="bg-primary rounded-full px-8 py-6 text-lg font-medium text-white hover:bg-violet-900">
-            답변하기
-          </Button>
-        </Card>
-      )}
+      {canAnswer && <AnswerForm questionAuthor={question.author} />}
 
       {/* 답변 */}
       <div className="flex flex-col gap-12">
