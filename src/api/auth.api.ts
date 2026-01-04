@@ -3,7 +3,7 @@ import {
   LOG_OUT_URL,
   REFRESH_ACCESS_TOKEN_URL,
   USER_URL,
-} from '@/data/index'
+} from '@/constants/index'
 import { api } from '@/lib/api'
 import { token } from '@/lib/index'
 import type { User } from '@/types/user'

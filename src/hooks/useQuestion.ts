@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { fetchQuestionDetail } from '@/api/questions.api'
-import { queryKeys } from '@/data/queryKeys'
+import { queryKeys } from '@/constants/queryKeys'
 
 export const useQuestion = (id: string) => {
   return useQuery({

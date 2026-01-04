@@ -1,5 +1,5 @@
 import { adoptAnswer, deleteAnswer, editAnswer, postAnswer } from '@/api/index'
-import { queryKeys } from '@/data/queryKeys'
+import { queryKeys } from '@/constants/queryKeys'
 import { queryClient } from '@/lib'
 import { useMutation } from '@tanstack/react-query'
 

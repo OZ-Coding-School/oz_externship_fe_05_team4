@@ -1,4 +1,4 @@
-const BASE_URL = 'https://api.ozcodingschool.site/api/v1'
+const BASE_URL = import.meta.env.VITE_BASE_URL
 
 const LOG_IN_URL = `/accounts/login`
 

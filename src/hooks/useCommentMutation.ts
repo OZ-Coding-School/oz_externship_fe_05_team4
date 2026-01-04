@@ -1,5 +1,5 @@
 import { deleteComment, editComment, postComment } from '@/api/comment.api'
-import { queryKeys } from '@/data/queryKeys'
+import { queryKeys } from '@/constants/queryKeys'
 import { queryClient } from '@/lib'
 import { useMutation } from '@tanstack/react-query'
 
