@@ -1,4 +1,4 @@
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { Pencil, SlidersHorizontal } from 'lucide-react'
 
 import SearchBar from '@/components/questions/SearchBar'
@@ -16,6 +16,8 @@ import { useSessionState } from '@/hooks/useSessionState'
 import { useEffect, useState } from 'react'
 import type { CategoryValue } from '@/types'
 import ChatbotContainer from '@/components/chatbot/ChatbotContainer'
+import { useAuthStore } from '@/store/auth.store'
+import { Button } from '@/components/ui'
 
 export default function MainPage() {
   // 챗봇 테스트용으로 생성 추후 삭제
@@ -58,6 +60,9 @@ export default function MainPage() {
     category
   )
 
+  const user = useAuthStore((state) => state.user)
+  const navigate = useNavigate()
+
   /*렌더*/
   return (
     <main className="mx-auto w-full max-w-[960px] px-6">
@@ -69,12 +74,17 @@ export default function MainPage() {
           <SearchBar value={search} onChange={setSearch} />
         </div>
 
-        <Link to="/Question/Create">
-          <button className="bg-primary hover:bg-primary-400 flex h-10 items-center gap-2 rounded-md px-6 text-sm font-semibold text-white">
-            <Pencil className="h-4 w-4" />
-            질문하기
-          </button>
-        </Link>
+        <Button
+          draggable={false}
+          disabled={user?.role !== 'ST'}
+          className="bg-primary hover:bg-primary-400 flex h-10 items-center gap-2 rounded-md px-6 text-sm font-semibold text-white"
+          onClick={() => {
+            navigate('/Question/Create')
+          }}
+        >
+          <Pencil className="h-4 w-4" />
+          질문하기
+        </Button>
       </section>
 
       {/* 탭 + 정렬/필터 */}

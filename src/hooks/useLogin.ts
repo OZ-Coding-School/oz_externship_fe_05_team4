@@ -4,7 +4,7 @@ import { useAuthStore } from '@/store/auth.store'
 import type { User } from '@/types/user'
 import { useMutation } from '@tanstack/react-query'
 
-// 로그인0
+// 로그인
 interface LoginPayload {
   email: string
   password: string
