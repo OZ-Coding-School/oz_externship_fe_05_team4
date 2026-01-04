@@ -8,7 +8,9 @@ import type { Answer as AnswerType } from '@/schema/index'
 import Answer from '@/components/answer/Answer'
 import profile from '@/assets/profile.png'
 import { timeAgo } from '@/utils/date'
-import AnswerForm from '@/components/answer/AnswerForm'
+import { useState } from 'react'
+import AnswerCreate from '@/components/answer/AnswerCreate'
+import AnswerEdit from '@/components/answer/AnswerEdit'
 
 export default function QuestionDetail() {
   const { id } = useParams()
@@ -34,8 +36,12 @@ export default function QuestionDetail() {
     ) ?? []),
   ]
 
-  const canAnswer =
+  const canCreateAnswer =
     isAuthenticated && !myAnswer && user?.id !== question?.author.id
+
+  const [isEditingAnswer, setIsEditingAnswer] = useState<boolean>(false)
+  const canEditAnswer =
+    isAuthenticated && myAnswer?.author.id === user?.id && isEditingAnswer
 
   // TODO: 로딩 중, 에러 처리 (Suspense & Error Boundary?)
   if (isLoading) return <div>로딩 중...</div>
@@ -120,10 +126,25 @@ export default function QuestionDetail() {
       </div>
 
       {/* 답변하기 */}
-      {canAnswer && (
-        <AnswerForm questionId={question.id} questionAuthor={question.author} />
+      {canCreateAnswer && (
+        <AnswerCreate
+          questionId={question.id}
+          questionAuthor={question.author}
+        />
       )}
 
+      {/* 답변 수정하기 */}
+      {isEditingAnswer && (
+        <AnswerEdit
+          questionId={question.id}
+          answerId={myAnswer!.id}
+          questionAuthor={question.author}
+          myAnswer={myAnswer!}
+          setIsEditingAnswer={setIsEditingAnswer}
+        />
+      )}
+
+      {/* 내 답변 */}
       {myAnswer && (
         <Answer
           key={id}
@@ -131,6 +152,8 @@ export default function QuestionDetail() {
           questionId={question.id}
           questionAuthorId={question.author.id}
           hasAdoptedAnswer={hasAdoptedAnswer}
+          isEditing={isEditingAnswer}
+          setIsEditing={setIsEditingAnswer}
         />
       )}
 

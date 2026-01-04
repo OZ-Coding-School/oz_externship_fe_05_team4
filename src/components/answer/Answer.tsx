@@ -8,18 +8,22 @@ import profile from '@/assets/profile.png'
 import { cn } from '@/lib/utils'
 import AnswerAdoptButton from './AnswerAdoptButton'
 import CommentForm from '../comment/CommentForm'
-import { useState } from 'react'
+import { useState, type Dispatch, type SetStateAction } from 'react'
 
 export default function Answer({
   answer,
   questionId,
   questionAuthorId,
   hasAdoptedAnswer,
+  isEditing,
+  setIsEditing,
 }: {
   answer: Answer
   questionId: number
   questionAuthorId: number
   hasAdoptedAnswer: boolean
+  isEditing?: boolean
+  setIsEditing?: Dispatch<SetStateAction<boolean>>
 }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated())
   const user = useAuthStore((state) => state.user)
@@ -29,11 +33,16 @@ export default function Answer({
     ? [...answer.comments].reverse()
     : answer.comments
 
+  const isMine = isAuthenticated && user?.id === answer.author.id
   const isAdoptable =
     !hasAdoptedAnswer &&
     isAuthenticated &&
     user?.id === questionAuthorId &&
     user?.id !== answer.author.id
+
+  if (isEditing) {
+    return null
+  }
 
   return (
     <Card
@@ -54,7 +63,17 @@ export default function Answer({
 
         <span className="grow px-4">{answer.author.nickname}</span>
 
-        {/* 답변 채택 하기 */}
+        {/* 답변 수정하기 */}
+        {isMine && (
+          <Button
+            className="bg-primary-200 text-primary border-primary hover:bg-primary rounded-full border px-8 py-6 text-sm transition-all duration-200 hover:text-white"
+            onClick={() => setIsEditing?.(!isEditing)}
+          >
+            답변 수정하기
+          </Button>
+        )}
+
+        {/* 답변 채택하기 */}
         {isAdoptable && (
           <AnswerAdoptButton questionId={questionId} answerId={answer.id} />
         )}

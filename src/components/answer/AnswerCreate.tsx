@@ -1,18 +1,18 @@
-import { Avatar, AvatarImage } from '@/components/ui/Avatar'
-import { Button, Card } from '@/components/ui/index'
 import {
   AnswerCreateFormSchema,
   type AnswerCreateForm,
   type Author,
 } from '@/schema/index'
 import { useState } from 'react'
-import profile from '@/assets/profile.png'
-import AnswerEditor from '@/components/answer/AnswerEditor'
 import { useCreateAnswer } from '@/hooks/useAnswerMutation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
+import { Avatar, AvatarImage } from '@/components/ui/Avatar'
+import { Button, Card } from '@/components/ui/index'
+import profile from '@/assets/profile.png'
+import AnswerEditor from '@/components/answer/AnswerEditor'
 
-const AnswerForm = ({
+const AnswerCreate = ({
   questionId,
   questionAuthor,
 }: {
@@ -88,4 +88,4 @@ const AnswerForm = ({
   )
 }
 
-export default AnswerForm
+export default AnswerCreate
