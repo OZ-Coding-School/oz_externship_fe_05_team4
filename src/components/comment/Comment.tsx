@@ -1,4 +1,4 @@
-import { Avatar, AvatarImage } from '@/components/ui'
+import { Avatar, AvatarImage, Button } from '@/components/ui'
 import profile from '@/assets/profile.png'
 import type { Comment } from '@/schema/index'
 import { format } from 'date-fns'
@@ -15,6 +15,8 @@ export default function Comment({
 }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated())
   const user = useAuthStore((state) => state.user)
+
+  const isMine = isAuthenticated && user?.id === comment.author.id
 
   return (
     <div className="flex items-center gap-6">
@@ -34,6 +36,17 @@ export default function Comment({
 
         <p className="text-gray-800">{comment.content}</p>
       </div>
+
+      {isMine && (
+        <div className="flex flex-col items-center gap-1">
+          <Button variant="ghost" className="h-6 w-8 text-xs text-gray-600">
+            수정
+          </Button>
+          <Button variant="ghost" className="h-6 w-8 text-xs text-gray-600">
+            삭제
+          </Button>
+        </div>
+      )}
     </div>
   )
 }
