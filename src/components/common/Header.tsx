@@ -11,18 +11,12 @@ import {
 import profileImg from '@/assets/profile.png'
 import Login from '@/components/auth/Login'
 import { useAuthStore } from '@/store/index'
-import { token } from '@/lib/index'
+import { useLogout } from '@/hooks/useLogin'
 
 export default function Header() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated())
-  const setUnauthenticated = useAuthStore((state) => state.setUnauthenticated)
 
-  // TODO: 로그아웃 커스텀 훅으로 TanStack 사용해서 싹 분리하기
-  // await logOut()
-  const handleLogout = () => {
-    token.clear()
-    setUnauthenticated()
-  }
+  const { mutate: logout } = useLogout()
 
   return (
     <header className="w-full">
@@ -90,7 +84,7 @@ export default function Header() {
                 <DropdownMenuItem>설정</DropdownMenuItem>
                 <DropdownMenuItem
                   className="text-red-600"
-                  onClick={handleLogout}
+                  onClick={() => logout()}
                 >
                   로그아웃
                 </DropdownMenuItem>
