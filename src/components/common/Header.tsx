@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/DropdownMenu'
 import profileImg from '@/assets/profile.png'
-import Login from '@/components/auth/Login'
+import TemporaryLogin from '@/components/auth/TemporaryLogin'
 import { useAuthStore } from '@/store/index'
 import { useLogout } from '@/hooks/useLogin'
 
@@ -53,7 +53,7 @@ export default function Header() {
           {/* RIGHT */}
           {!isAuthenticated ? (
             <div className="flex items-center gap-3 text-sm text-gray-700">
-              <Login />
+              <TemporaryLogin />
               <a
                 href="https://my.ozcodingschool.site/"
                 className="hover:text-black"
