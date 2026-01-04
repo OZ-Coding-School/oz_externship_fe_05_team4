@@ -27,7 +27,10 @@ export type Comment = z.infer<typeof CommentSchema>
 
 // 댓글 등록 요청
 export const CommentCreateFormSchema = z.object({
-  content: z.string().min(1, '내용을 입력해주세요.'),
+  content: z
+    .string()
+    .min(1, '내용을 입력해주세요.')
+    .max(500, '내용은 500자 이하로 입력해주세요.'),
 })
 
 export type CommentCreateForm = z.infer<typeof CommentCreateFormSchema>

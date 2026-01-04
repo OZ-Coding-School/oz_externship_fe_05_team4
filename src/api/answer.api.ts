@@ -19,7 +19,7 @@ const postAnswer = async ({
   answer: AnswerCreateForm
 }): Promise<AnswerCreateResponse> => {
   const response = await api.post(
-    `/qna/questions/${questionId}/answers`,
+    `/qna/questions/${questionId}/answers/`,
     answer
   )
 
@@ -38,7 +38,7 @@ const editAnswer = async ({
   answer: AnswerEditForm
 }): Promise<AnswerEditResponse> => {
   const response = await api.put(
-    `/qna/questions/${questionId}/answers/${answerId}`,
+    `/qna/questions/${questionId}/answers/${answerId}/`,
     answer
   )
 
@@ -54,7 +54,7 @@ const deleteAnswer = async ({
   questionId: number
   answerId: number
 }): Promise<void> => {
-  await api.delete(`/qna/questions/${questionId}/answers/${answerId}`)
+  await api.delete(`/qna/questions/${questionId}/answers/${answerId}/`)
 }
 
 // 답변 채택
@@ -66,13 +66,14 @@ const adoptAnswer = async ({
   answerId: number
 }): Promise<AnswerAdoptResponse> => {
   const response = await api.post(
-    `/qna/questions/${questionId}/answers/${answerId}/adopt`
+    `/qna/questions/${questionId}/answers/${answerId}/adopt/`
   )
 
   // TODO: 에러 처리 (그럴일은 없더라도)
   return AnswerAdoptResponseSchema.parse(response.data)
 }
 
+// TODO: 현재 미구현.
 // AI 답변 생성
 const generateAiAnswer = async (questionId: number) => {
   const response = await api.get(`/qna/questions/${questionId}/ai-answers`)

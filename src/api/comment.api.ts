@@ -19,7 +19,7 @@ const postComment = async ({
   comment: CommentCreateForm
 }): Promise<CommentCreateResponse> => {
   const response = await api.post(
-    `/qna/questions/${questionId}/answers/${answerId}/comments`,
+    `/qna/questions/${questionId}/answers/${answerId}/comments/`,
     comment
   )
   return CommentCreateResponseSchema.parse(response.data)
@@ -38,7 +38,7 @@ const editComment = async ({
   comment: CommentEditForm
 }): Promise<Comment> => {
   const response = await api.put(
-    `/qna/questions/${questionId}/answers/${answerId}/comments/${commentId}`,
+    `/qna/questions/${questionId}/answers/${answerId}/comments/${commentId}/`,
     comment
   )
   return CommentEditResponseSchema.parse(response.data)
@@ -55,7 +55,7 @@ const deleteComment = async ({
   commentId: number
 }): Promise<void> => {
   await api.delete(
-    `/qna/questions/${questionId}/answers/${answerId}/comments/${commentId}`
+    `/qna/questions/${questionId}/answers/${answerId}/comments/${commentId}/`
   )
 }
 
