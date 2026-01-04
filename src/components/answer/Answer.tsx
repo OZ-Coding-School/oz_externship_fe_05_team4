@@ -1,12 +1,13 @@
-import { Button, Card, Textarea, Avatar, AvatarImage } from '@/components/ui'
+import { Button, Card, Avatar, AvatarImage } from '@/components/ui'
 import { ArrowUpDown, MessageCircle } from 'lucide-react'
-import Comment from '@/components/common/Comment'
-import type { Answer } from '@/schema/index'
+import Comment from '@/components/comment/Comment'
+import { type Answer } from '@/schema/index'
 import { useAuthStore } from '@/store/auth.store'
 import { timeAgo } from '@/utils/date'
 import profile from '@/assets/profile.png'
 import { cn } from '@/lib/utils'
 import AnswerAdoptButton from './AnswerAdoptButton'
+import CommentForm from '../comment/CommentForm'
 
 export default function Answer({
   answer,
@@ -67,19 +68,7 @@ export default function Answer({
 
       {/* 댓글 입력 */}
       {isAuthenticated && (
-        <div className="text-right text-sm text-gray-400">
-          <div className="relative">
-            {/* TODO: 댓글 등록 API 연결 (form 으로?) */}
-            <Textarea
-              rows={5}
-              className="w-full border border-gray-300 px-6 py-4 text-sm"
-              placeholder="개인정보를 공유 및 요청하거나, 명예 회손, 무단 광고, 불법 정보 유포시 모니터링 후 삭제될 수 있습니다."
-            />
-            <Button className="absolute right-3 bottom-3 rounded-full bg-gray-200 px-5 py-2 text-sm text-black">
-              등록
-            </Button>
-          </div>
-        </div>
+        <CommentForm questionId={questionId} answerId={answer.id} />
       )}
 
       {/* 댓글 */}
