@@ -40,8 +40,6 @@ export default function QuestionDetail() {
     isAuthenticated && !myAnswer && user?.id !== question?.author.id
 
   const [isEditingAnswer, setIsEditingAnswer] = useState<boolean>(false)
-  const canEditAnswer =
-    isAuthenticated && myAnswer?.author.id === user?.id && isEditingAnswer
 
   // TODO: 로딩 중, 에러 처리 (Suspense & Error Boundary?)
   if (isLoading) return <div>로딩 중...</div>

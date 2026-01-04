@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar'
+import { Avatar, AvatarImage } from '@/components/ui/index'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,20 +9,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/DropdownMenu'
 import profileImg from '@/assets/profile.png'
-import Login from '@/components/auth/Login'
+import TemporaryLogin from '@/components/auth/TemporaryLogin'
 import { useAuthStore } from '@/store/index'
-import { token } from '@/lib/index'
+import { useLogout } from '@/hooks/useLogin'
 
 export default function Header() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated())
-  const setUnauthenticated = useAuthStore((state) => state.setUnauthenticated)
 
-  // TODO: 로그아웃 커스텀 훅으로 TanStack 사용해서 싹 분리하기
-  // await logOut()
-  const handleLogout = () => {
-    token.clear()
-    setUnauthenticated()
-  }
+  const { mutate: logout } = useLogout()
 
   return (
     <header className="w-full">
@@ -59,7 +53,7 @@ export default function Header() {
           {/* RIGHT */}
           {!isAuthenticated ? (
             <div className="flex items-center gap-3 text-sm text-gray-700">
-              <Login />
+              <TemporaryLogin />
               <a
                 href="https://my.ozcodingschool.site/"
                 className="hover:text-black"
@@ -76,10 +70,9 @@ export default function Header() {
             </div>
           ) : (
             <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Avatar className="h-8 w-8 cursor-pointer">
+              <DropdownMenuTrigger className="h-8 w-8 cursor-pointer rounded-full focus-visible:outline-none">
+                <Avatar>
                   <AvatarImage src={profileImg} alt="프로필 이미지" />
-                  <AvatarFallback>ME</AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
 
@@ -90,7 +83,7 @@ export default function Header() {
                 <DropdownMenuItem>설정</DropdownMenuItem>
                 <DropdownMenuItem
                   className="text-red-600"
-                  onClick={handleLogout}
+                  onClick={() => logout()}
                 >
                   로그아웃
                 </DropdownMenuItem>

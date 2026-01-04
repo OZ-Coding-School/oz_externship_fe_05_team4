@@ -2,10 +2,9 @@ import axios from 'axios'
 import { token } from '@/lib/index'
 import { refreshAccessToken } from '@/api/index'
 import { useAuthStore } from '@/store/index'
-import { BASE_URL } from '@/data/index'
+import { BASE_URL } from '@/constants/index'
 
 export const api = axios.create({
-  // TODO: BASE_URL은 env에 넣기
   baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',

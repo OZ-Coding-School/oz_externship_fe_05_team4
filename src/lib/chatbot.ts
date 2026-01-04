@@ -2,7 +2,7 @@ import type { ChatMessageType, CreateChatbotSessionPayload } from '@/types'
 import { api } from '@/lib/api'
 import { fetchEventSource } from '@microsoft/fetch-event-source'
 import { token } from './'
-import { BASE_URL } from '@/data'
+import { BASE_URL } from '@/constants'
 
 interface CompletionItem {
   id: number
