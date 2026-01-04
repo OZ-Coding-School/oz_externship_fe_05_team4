@@ -66,7 +66,7 @@ const adoptAnswer = async ({
   answerId: number
 }): Promise<AnswerAdoptResponse> => {
   const response = await api.post(
-    `/qna/questions/${questionId}/answers/${answerId}/adopt`
+    `/qna/questions/${questionId}/answers/${answerId}/adopt/`
   )
 
   // TODO: 에러 처리 (그럴일은 없더라도)

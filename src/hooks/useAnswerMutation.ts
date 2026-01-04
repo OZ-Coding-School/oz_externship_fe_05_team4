@@ -8,6 +8,10 @@ const useCreateAnswer = () => {
   return useMutation({
     mutationFn: postAnswer,
     onSuccess: (_, variables) => {
+      // 질문 목록 캐시 무효화
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.list(),
+      })
       // 질문 상세 캐시 무효화
       queryClient.invalidateQueries({
         queryKey: queryKeys.detail(variables.questionId),

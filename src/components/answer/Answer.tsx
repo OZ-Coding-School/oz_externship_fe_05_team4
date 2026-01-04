@@ -2,21 +2,32 @@ import { Button, Card, Textarea, Avatar, AvatarImage } from '@/components/ui'
 import { ArrowUpDown, MessageCircle } from 'lucide-react'
 import Comment from '@/components/common/Comment'
 import type { Answer } from '@/schema/index'
-import type { User } from '@/types/user'
 import { useAuthStore } from '@/store/auth.store'
 import { timeAgo } from '@/utils/date'
 import profile from '@/assets/profile.png'
+import { useAdoptAnswer } from '@/hooks/useAnswerMutation'
 
 export default function Answer({
   answer,
-  user,
+  questionId,
   questionAuthorId,
+  hasAdoptedAnswer,
 }: {
   answer: Answer
-  user: User | null
+  questionId: number
   questionAuthorId: number
+  hasAdoptedAnswer: boolean
 }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated())
+  const user = useAuthStore((state) => state.user)
+
+  const { mutate: adoptAnswerMutate } = useAdoptAnswer()
+
+  const isAdoptable =
+    !hasAdoptedAnswer &&
+    isAuthenticated &&
+    user?.id === questionAuthorId &&
+    user?.id !== answer.author.id
 
   return (
     <Card className="flex flex-col gap-8 px-10 py-12">
@@ -27,14 +38,17 @@ export default function Answer({
 
         <span className="grow px-4">{answer.author.nickname}</span>
 
-        {/* TODO: 채택하기 API 연결 */}
-        {isAuthenticated &&
-          user?.id === questionAuthorId &&
-          user.id !== answer.author.id && (
-            <Button className="bg-primary rounded-full px-6 py-5 text-sm text-white">
-              채택하기
-            </Button>
-          )}
+        {/* TODO: 확인 모달 띄우기 */}
+        {isAdoptable && (
+          <Button
+            className="bg-primary rounded-full px-6 py-5 text-sm text-white"
+            onClick={() =>
+              adoptAnswerMutate({ questionId, answerId: answer.id })
+            }
+          >
+            채택하기
+          </Button>
+        )}
       </div>
 
       {/* 답변 내용 */}
@@ -77,15 +91,22 @@ export default function Answer({
             </h2>
           </div>
           {/* TODO: 댓글 정렬 버튼 (최신순, 오래된 순) */}
-          <Button variant="ghost" className="text-gray-600">
-            최신순
+          <Button variant="ghost" className="flex gap-2 text-gray-600">
+            <span>최신순</span>
             <ArrowUpDown className="h-4 w-4" />
           </Button>
         </div>
 
         <div className="flex flex-col gap-8">
           {answer.comments.map((comment) => {
-            return <Comment key={comment.id} comment={comment} />
+            return (
+              <Comment
+                key={comment.id}
+                comment={comment}
+                questionId={questionId}
+                answerId={answer.id}
+              />
+            )
           })}
         </div>
       </div>

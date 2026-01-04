@@ -15,29 +15,32 @@ export default function QuestionDetail() {
   const user = useAuthStore((state) => state.user)
   const navigate = useNavigate()
 
-  const { data, isLoading, isError } = useQuestion(id)
+  const { data: question, isLoading, isError } = useQuestion(id!)
+
+  const hasAdoptedAnswer =
+    question?.answers.some((answer) => answer.isAdopted) ?? false
 
   // TODO: 로딩 중, 에러 처리 (Suspense & Error Boundary?)
   if (isLoading) return <div>로딩 중...</div>
 
-  if (isError || !data) return <div>에러가 발생했습니다.</div>
+  if (isError || !question) return <div>에러가 발생했습니다.</div>
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-8 px-4 py-8">
       <div>
         {/* 1. 상단 브레드크럼  */}
         <nav className="text-primary mb-4 flex items-center gap-1 font-semibold">
-          <span>{data.category.names[0]}</span>
-          {data.category.names.length > 1 && (
+          <span>{question.category.names[0]}</span>
+          {question.category.names.length > 1 && (
             <>
               <ChevronRight className="h-4 w-4" />
-              <span>{data.category.names[1]}</span>
+              <span>{question.category.names[1]}</span>
             </>
           )}
-          {data.category.names.length > 2 && (
+          {question.category.names.length > 2 && (
             <>
               <ChevronRight className="h-4 w-4" />
-              <span className="font-bold">{data.category.names[2]}</span>
+              <span className="font-bold">{question.category.names[2]}</span>
             </>
           )}
         </nav>
@@ -47,15 +50,15 @@ export default function QuestionDetail() {
           <span className="text-primary text-[40px] leading-none font-bold">
             Q.
           </span>
-          <h1 className="grow text-3xl font-bold">{data.title}</h1>
+          <h1 className="grow text-3xl font-bold">{question.title}</h1>
 
           <div className="flex items-center gap-2">
             <Avatar className="h-10 w-10 overflow-hidden rounded-full">
-              <AvatarImage src={data.author.profileImageUrl ?? profile} />
+              <AvatarImage src={question.author.profileImageUrl ?? profile} />
             </Avatar>
 
             <p className="font-medium whitespace-nowrap text-gray-700">
-              {data.author.nickname}
+              {question.author.nickname}
             </p>
           </div>
         </div>
@@ -63,14 +66,14 @@ export default function QuestionDetail() {
         <div className="mt-6 flex items-center justify-between text-sm">
           <div className="flex gap-2">
             <span className="text-gray-400">
-              조회수 {data.viewCount} • {timeAgo(data.createdAt)}
+              조회수 {question.viewCount} • {timeAgo(question.createdAt)}
             </span>
           </div>
-          {isAuthenticated && user?.nickname === data.author.nickname && (
+          {isAuthenticated && user?.id === question.author.id && (
             <Button
               variant="ghost"
               className="text-primary"
-              onClick={() => navigate(`/Question/edit/${data.id}`)}
+              onClick={() => navigate(`/Question/edit/${question.id}`)}
             >
               수정
             </Button>
@@ -81,7 +84,7 @@ export default function QuestionDetail() {
       {/* 질문 내용 */}
       <div className="mb-12 border-y-1 border-gray-300 py-12">
         <p className="text-[16px] leading-relaxed text-gray-800">
-          {data.content}
+          {question.content}
         </p>
         <div className="mt-16 border-gray-200 pt-6">
           <div className="flex justify-end">
@@ -97,16 +100,16 @@ export default function QuestionDetail() {
       </div>
 
       {/* 답변하기 */}
-      {isAuthenticated && user?.id !== data.author.id && (
+      {isAuthenticated && user?.id !== question.author.id && (
         <Card className="mb-12 flex items-center justify-between rounded-3xl border-gray-200 p-9">
           <div className="flex items-center gap-4">
             <Avatar className="h-12 w-12 overflow-hidden rounded-full">
-              <AvatarImage src={data.author.profileImageUrl ?? profile} />
+              <AvatarImage src={question.author.profileImageUrl ?? profile} />
             </Avatar>
 
             <div className="flex flex-col">
               <span className="text-primary text-sm font-medium">
-                {data.author.nickname} 님,
+                {question.author.nickname} 님,
               </span>
               <span className="font-semibold text-gray-800">
                 정보를 공유해 주세요.
@@ -127,16 +130,17 @@ export default function QuestionDetail() {
             A
           </span>
           <p className="text-xl font-bold text-gray-800">
-            <span>{data.answers.length}개의 답변이 있어요</span>
+            <span>{question.answers.length}개의 답변이 있어요</span>
           </p>
         </div>
 
-        {data.answers.map((answer: AnswerType) => (
+        {question.answers.map((answer: AnswerType) => (
           <Answer
             key={answer.id}
             answer={answer}
-            user={user}
-            questionAuthorId={data.author.id}
+            questionId={question.id}
+            questionAuthorId={question.author.id}
+            hasAdoptedAnswer={hasAdoptedAnswer}
           />
         ))}
       </div>
