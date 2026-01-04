@@ -20,6 +20,11 @@ export default function QuestionDetail() {
   const hasAdoptedAnswer =
     question?.answers.some((answer) => answer.isAdopted) ?? false
 
+  const sortedAnswers = [
+    ...(question?.answers.filter((answer) => answer.isAdopted) ?? []),
+    ...(question?.answers.filter((answer) => !answer.isAdopted) ?? []),
+  ]
+
   // TODO: 로딩 중, 에러 처리 (Suspense & Error Boundary?)
   if (isLoading) return <div>로딩 중...</div>
 
@@ -124,7 +129,7 @@ export default function QuestionDetail() {
       )}
 
       {/* 답변 */}
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-12">
         <div className="flex items-center gap-3">
           <span className="bg-primary flex h-9 w-9 items-center justify-center rounded-full font-bold text-white">
             A
@@ -134,7 +139,7 @@ export default function QuestionDetail() {
           </p>
         </div>
 
-        {question.answers.map((answer: AnswerType) => (
+        {sortedAnswers.map((answer: AnswerType) => (
           <Answer
             key={answer.id}
             answer={answer}

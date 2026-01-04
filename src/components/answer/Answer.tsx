@@ -19,6 +19,7 @@ import { timeAgo } from '@/utils/date'
 import profile from '@/assets/profile.png'
 import { useAdoptAnswer } from '@/hooks/useAnswerMutation'
 import { DialogDescription } from '@radix-ui/react-dialog'
+import { cn } from '@/lib/utils'
 
 export default function Answer({
   answer,
@@ -43,7 +44,17 @@ export default function Answer({
     user?.id !== answer.author.id
 
   return (
-    <Card className="flex flex-col gap-8 px-10 py-12">
+    <Card
+      className={cn(
+        'flex flex-col gap-8 px-10 py-12',
+        answer.isAdopted && 'border-primary relative'
+      )}
+    >
+      <div className="bg-primary absolute -top-4 left-10 rounded-full px-4 py-2 text-sm text-white">
+        질문자 채택
+      </div>
+
+      {/* 답변 헤더 */}
       <div className="flex items-center">
         <Avatar className="h-10 w-10 overflow-hidden rounded-full">
           <AvatarImage src={answer.author.profileImageUrl ?? profile} />
