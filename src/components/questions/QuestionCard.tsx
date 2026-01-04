@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils'
 import { highlightText } from '@/lib/highlight'
 import defaultProfileImg from '@/assets/profile.png'
+import { stripHtmlTags } from '@/utils/index'
 
 interface QuestionCardProps {
   id: number
@@ -51,7 +52,9 @@ export default function QuestionCard({
         </h2>
 
         <p className="line-clamp-2 text-[14px] leading-[20px] text-gray-600">
-          {searchKeyword ? highlightText(preview, searchKeyword) : preview}
+          {searchKeyword
+            ? highlightText(stripHtmlTags(preview), searchKeyword)
+            : stripHtmlTags(preview)}
         </p>
 
         <div className="mt-3 flex items-center gap-4 text-[12px] text-gray-500">
