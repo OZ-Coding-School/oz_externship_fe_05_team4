@@ -1,25 +1,12 @@
-import {
-  Button,
-  Card,
-  Textarea,
-  Avatar,
-  AvatarImage,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogClose,
-} from '@/components/ui'
+import { Button, Card, Textarea, Avatar, AvatarImage } from '@/components/ui'
 import { ArrowUpDown, MessageCircle } from 'lucide-react'
 import Comment from '@/components/common/Comment'
 import type { Answer } from '@/schema/index'
 import { useAuthStore } from '@/store/auth.store'
 import { timeAgo } from '@/utils/date'
 import profile from '@/assets/profile.png'
-import { useAdoptAnswer } from '@/hooks/useAnswerMutation'
-import { DialogDescription } from '@radix-ui/react-dialog'
 import { cn } from '@/lib/utils'
+import AnswerAdoptButton from './AnswerAdoptButton'
 
 export default function Answer({
   answer,
@@ -34,8 +21,6 @@ export default function Answer({
 }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated())
   const user = useAuthStore((state) => state.user)
-
-  const { mutate: adoptAnswerMutate } = useAdoptAnswer()
 
   const isAdoptable =
     !hasAdoptedAnswer &&
@@ -64,36 +49,7 @@ export default function Answer({
 
         {/* 답변 채택 하기 */}
         {isAdoptable && (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="bg-primary rounded-full px-6 py-5 text-sm text-white">
-                채택하기
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="flex flex-col gap-4">
-              <DialogHeader className="border-b border-gray-300 pb-2">
-                <DialogTitle className="text-lg">답변 채택</DialogTitle>
-              </DialogHeader>
-              <DialogDescription className="text-gray-600">
-                이 답변을 채택하시면, 해당 질문의 채택 답변으로 설정됩니다.
-              </DialogDescription>
-              <div className="flex justify-end gap-2">
-                <Button
-                  onClick={() =>
-                    adoptAnswerMutate({ questionId, answerId: answer.id })
-                  }
-                  className="text-sm"
-                >
-                  채택하기
-                </Button>
-                <DialogClose asChild>
-                  <Button variant="outline" className="text-sm">
-                    취소
-                  </Button>
-                </DialogClose>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <AnswerAdoptButton questionId={questionId} answerId={answer.id} />
         )}
       </div>
 
