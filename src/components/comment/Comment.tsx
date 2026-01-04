@@ -3,6 +3,7 @@ import profile from '@/assets/profile.png'
 import type { Comment } from '@/schema/index'
 import { format } from 'date-fns'
 import { useAuthStore } from '@/store/auth.store'
+import { useDeleteComment, useEditComment } from '@/hooks/useCommentMutation'
 
 export default function Comment({
   comment,
@@ -15,6 +16,20 @@ export default function Comment({
 }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated())
   const user = useAuthStore((state) => state.user)
+
+  // 댓글 수정
+  const { mutate: editMutate } = useEditComment()
+
+  const handleEdit = () => {
+    console.log('comment id: ', comment.id)
+  }
+
+  // 댓글 삭제
+  const { mutate: deleteMutate } = useDeleteComment()
+
+  const handleDelete = () => {
+    deleteMutate({ questionId, answerId, commentId: comment.id })
+  }
 
   const isMine = isAuthenticated && user?.id === comment.author.id
 
@@ -38,11 +53,19 @@ export default function Comment({
       </div>
 
       {isMine && (
-        <div className="flex flex-col items-center gap-1">
-          <Button variant="ghost" className="h-6 w-8 text-xs text-gray-600">
+        <div className="flex flex-col justify-center gap-1">
+          <Button
+            variant="ghost"
+            className="h-6 w-8 text-xs text-gray-400"
+            onClick={handleEdit}
+          >
             수정
           </Button>
-          <Button variant="ghost" className="h-6 w-8 text-xs text-gray-600">
+          <Button
+            variant="ghost"
+            className="h-6 w-8 text-xs text-gray-400"
+            onClick={handleDelete}
+          >
             삭제
           </Button>
         </div>
