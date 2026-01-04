@@ -35,6 +35,7 @@ const CommentForm = ({
       comment: data,
     })
     reset()
+    console.log(content)
   }
 
   return (

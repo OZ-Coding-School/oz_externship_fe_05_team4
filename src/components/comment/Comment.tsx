@@ -34,8 +34,8 @@ export default function Comment({
   const isMine = isAuthenticated && user?.id === comment.author.id
 
   return (
-    <div className="flex items-center gap-6">
-      <Avatar className="h-10 w-10 overflow-hidden rounded-full">
+    <div className="flex gap-6">
+      <Avatar className="selfoverflow-hidden my-2 h-10 w-10 rounded-full">
         <AvatarImage src={comment.author.profileImageUrl ?? profile} />
       </Avatar>
 
@@ -49,11 +49,11 @@ export default function Comment({
           </span>
         </div>
 
-        <p className="text-gray-800">{comment.content}</p>
+        <p className="whitespace-pre-line text-gray-800">{comment.content}</p>
       </div>
 
       {isMine && (
-        <div className="flex flex-col justify-center gap-1">
+        <div className="flex flex-col gap-1 py-0.5">
           <Button
             variant="ghost"
             className="h-6 w-8 text-xs text-gray-400"
