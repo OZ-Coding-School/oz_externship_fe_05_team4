@@ -1,24 +1,19 @@
-import { useState } from 'react'
 import { MenuBar, TextEditor } from '@/components/texteditor'
 import { useTextEditor } from '@/hooks/index'
 import { uploadMultipleImages } from '@/utils/uploadMultipleImages'
 
-const AnswerEditor = () => {
-  const [content, setContent] = useState<{
-    title: string
-    content: string
-    categoryId: number | null
-  }>({
-    title: '',
-    content: '',
-    categoryId: null,
-  })
-
-  // 텍스트에디터
+const AnswerEditor = ({
+  value,
+  onChange,
+}: {
+  value: string
+  onChange: (value: string) => void
+}) => {
+  // 텍스트 에디터
   const editor = useTextEditor({
-    content: '',
+    content: value,
     onUpdate: ({ editor }) => {
-      setContent((prev) => ({ ...prev, content: editor.getHTML() }))
+      onChange(editor.getHTML())
     },
   })
 
@@ -45,7 +40,7 @@ const AnswerEditor = () => {
           {/* TODO: 텍스트 에디터 뷰어로 대체하기 */}
           <div
             className="preview"
-            dangerouslySetInnerHTML={{ __html: content.content }}
+            dangerouslySetInnerHTML={{ __html: value }}
           />
         </div>
       </div>

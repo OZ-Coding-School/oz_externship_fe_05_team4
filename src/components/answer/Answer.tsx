@@ -63,9 +63,10 @@ export default function Answer({
       {/* 답변 내용 */}
       <div className="mb-8 flex flex-col gap-8 border-b border-gray-200 py-4">
         {/* TODO: 텍스트 에디터 뷰어 */}
-        <div className="rounded-lg bg-gray-50 py-8 whitespace-pre-wrap">
-          {answer.content}
-        </div>
+        <div
+          className="preview"
+          dangerouslySetInnerHTML={{ __html: answer.content }}
+        />
 
         <span className="self-end text-sm text-gray-400">
           {timeAgo(answer.createdAt)}

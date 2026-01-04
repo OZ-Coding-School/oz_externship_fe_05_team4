@@ -120,7 +120,9 @@ export default function QuestionDetail() {
       </div>
 
       {/* 답변하기 */}
-      {canAnswer && <AnswerForm questionAuthor={question.author} />}
+      {canAnswer && (
+        <AnswerForm questionId={question.id} questionAuthor={question.author} />
+      )}
 
       {myAnswer && (
         <Answer
