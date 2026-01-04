@@ -21,12 +21,21 @@ export default function QuestionDetail() {
   const hasAdoptedAnswer =
     question?.answers.some((answer) => answer.isAdopted) ?? false
 
+  const myAnswer = question?.answers.find(
+    (answer) => answer.author.id === user?.id
+  )
+
   const sortedAnswers = [
-    ...(question?.answers.filter((answer) => answer.isAdopted) ?? []),
-    ...(question?.answers.filter((answer) => !answer.isAdopted) ?? []),
+    ...(question?.answers.filter(
+      (answer) => answer.isAdopted && answer.author.id !== user?.id
+    ) ?? []),
+    ...(question?.answers.filter(
+      (answer) => !answer.isAdopted && answer.author.id !== user?.id
+    ) ?? []),
   ]
 
-  const canAnswer = isAuthenticated && user?.id !== question?.author.id
+  const canAnswer =
+    isAuthenticated && !myAnswer && user?.id !== question?.author.id
 
   // TODO: 로딩 중, 에러 처리 (Suspense & Error Boundary?)
   if (isLoading) return <div>로딩 중...</div>
@@ -34,10 +43,10 @@ export default function QuestionDetail() {
   if (isError || !question) return <div>에러가 발생했습니다.</div>
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-8 px-4 py-8">
-      <div>
+    <div className="mx-auto flex max-w-4xl flex-col gap-12 px-4 py-8">
+      <div className="flex flex-col gap-4">
         {/* 1. 상단 브레드크럼  */}
-        <nav className="text-primary mb-4 flex items-center gap-1 font-semibold">
+        <nav className="text-primary flex items-center gap-1 font-semibold">
           <span>{question.category.names[0]}</span>
           {question.category.names.length > 1 && (
             <>
@@ -71,7 +80,7 @@ export default function QuestionDetail() {
           </div>
         </div>
 
-        <div className="mt-6 flex items-center justify-between text-sm">
+        <div className="flex items-center justify-between text-sm">
           <div className="flex gap-2">
             <span className="text-gray-400">
               조회수 {question.viewCount} • {timeAgo(question.createdAt)}
@@ -90,7 +99,7 @@ export default function QuestionDetail() {
       </div>
 
       {/* 질문 내용 */}
-      <div className="mb-12 border-y-1 border-gray-300 py-12">
+      <div className="border-y-1 border-gray-300 py-12">
         {/* TODO: 텍스트 에디터 뷰어로 대체하기 */}
         <p
           dangerouslySetInnerHTML={{ __html: question.content }}
@@ -112,6 +121,16 @@ export default function QuestionDetail() {
 
       {/* 답변하기 */}
       {canAnswer && <AnswerForm questionAuthor={question.author} />}
+
+      {myAnswer && (
+        <Answer
+          key={id}
+          answer={myAnswer}
+          questionId={question.id}
+          questionAuthorId={question.author.id}
+          hasAdoptedAnswer={hasAdoptedAnswer}
+        />
+      )}
 
       {/* 답변 */}
       <div className="flex flex-col gap-12">

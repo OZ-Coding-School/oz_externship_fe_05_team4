@@ -9,7 +9,7 @@ const AnswerForm = ({ questionAuthor }: { questionAuthor: Author }) => {
   const [isAnswering, setIsAnswering] = useState<boolean>(false)
 
   return (
-    <Card className="mb-12 flex flex-col overflow-hidden rounded-3xl border-gray-200">
+    <Card className="flex flex-col overflow-hidden rounded-3xl border-gray-200">
       <div className="flex items-center gap-4 p-10">
         <Avatar className="h-12 w-12 overflow-hidden rounded-full">
           <AvatarImage src={questionAuthor.profileImageUrl ?? profile} />
