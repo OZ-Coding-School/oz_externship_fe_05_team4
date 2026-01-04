@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar'
+import { Avatar, AvatarImage } from '@/components/ui/index'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -70,10 +70,9 @@ export default function Header() {
             </div>
           ) : (
             <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Avatar className="h-8 w-8 cursor-pointer">
+              <DropdownMenuTrigger className="h-8 w-8 cursor-pointer rounded-full focus-visible:outline-none">
+                <Avatar>
                   <AvatarImage src={profileImg} alt="프로필 이미지" />
-                  <AvatarFallback>ME</AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
 
