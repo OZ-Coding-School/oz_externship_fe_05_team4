@@ -23,9 +23,16 @@ export interface ChatbotSessionItem {
 }
 
 //세션 조회
-export async function getChatbotSessions(): Promise<ChatbotSessionItem[]> {
-  const res =
-    await api.get<CursorResponse<ChatbotSessionItem>>('/chatbot/sessions')
+export async function getChatbotSessions(
+  questionId?: number
+): Promise<ChatbotSessionItem[]> {
+  const res = await api.get<CursorResponse<ChatbotSessionItem>>(
+    '/chatbot/sessions',
+    {
+      params: questionId ? { questionId } : undefined,
+    }
+  )
+
   return res.data.results
 }
 
@@ -33,9 +40,21 @@ export async function getChatbotSessions(): Promise<ChatbotSessionItem[]> {
 export async function getSessionByQuestionId(
   questionId: number
 ): Promise<number | null> {
-  const sessions = await getChatbotSessions()
-  const found = sessions.find((s) => s.question === questionId)
-  return found ? found.id : null
+  const sessions = await getChatbotSessions(questionId)
+  return sessions.length > 0 ? sessions[0].id : null
+}
+
+const DEFAULT_USING_MODEL = 'gemini-2.5-flash'
+const TEMP_SESSION_TITLE = 'AI 질문'
+
+export function buildCreateChatbotSessionPayload(params: {
+  questionId: number
+}): CreateChatbotSessionPayload {
+  return {
+    question: params.questionId,
+    title: TEMP_SESSION_TITLE,
+    using_model: DEFAULT_USING_MODEL,
+  }
 }
 
 //세션 생성
@@ -85,23 +104,22 @@ export function streamChatCompletion({
   onError?: (e: unknown) => void
 }) {
   const controller = new AbortController()
-
-  //같은 chunk가 중복으로 오는 케이스 방지
   let lastChunk = ''
 
   fetchEventSource(`${BASE_URL}/chatbot/sessions/${sessionId}/completions`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      // Accept: 'text/event-stream',
-      Accept: '*/*',
       Authorization: `Bearer ${token.get()}`,
+      'Content-Type': 'application/json',
+      Accept: 'text/event-stream',
     },
     body: JSON.stringify({ message }),
     signal: controller.signal,
 
     async onopen(res) {
-      if (!res.ok) throw new Error(`SSE failed: ${res.status}`)
+      if (!res.ok) {
+        throw new Error(`SSE failed: ${res.status}`)
+      }
     },
 
     onmessage(ev) {
@@ -114,18 +132,15 @@ export function streamChatCompletion({
       }
 
       try {
-        const data = JSON.parse(ev.data)
+        const data: { delta?: string } = JSON.parse(ev.data)
+        const chunk = data.delta ?? ''
 
-        //서버가 delta로 주는 케이스 기준
-        const chunk: string = data.delta ?? ''
-
-        //중복 chunk 무시
         if (!chunk || chunk === lastChunk) return
         lastChunk = chunk
 
         onMessage(chunk)
       } catch {
-        // ignore malformed chunk
+        // malformed chunk 무시
       }
     },
 

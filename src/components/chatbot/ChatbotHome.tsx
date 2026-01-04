@@ -1,27 +1,27 @@
-import { useEffect, useState } from 'react'
 import chatbotIcon from '@/assets/chatbot.png'
 import { X } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 import { getChatbotSessions, type ChatbotSessionItem } from '@/lib/chatbot'
+import { queryKeys } from '@/data/queryKeys'
 
 interface Props {
-  onNewChat: () => void
+  questionId: number
   onClose: () => void
-  onSelectChat: (questionId: number) => void
+  onSelectSession: (sessionId: number) => void
 }
 
 export default function ChatbotHome({
-  onNewChat,
+  questionId,
   onClose,
-  onSelectChat,
+  onSelectSession,
 }: Props) {
-  const [sessions, setSessions] = useState<ChatbotSessionItem[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    getChatbotSessions()
-      .then(setSessions)
-      .finally(() => setLoading(false))
-  }, [])
+  const { data: sessions = [], isLoading } = useQuery<ChatbotSessionItem[]>({
+    queryKey: queryKeys.aiChatsList(questionId),
+    queryFn: async () => {
+      const all = await getChatbotSessions(questionId)
+      return all
+    },
+  })
 
   return (
     <div className="flex h-full flex-col bg-white">
@@ -33,28 +33,20 @@ export default function ChatbotHome({
           />
           <span className="text-lg font-semibold">AI OZ</span>
         </div>
+
         <button onClick={onClose} className="absolute right-4">
           <X size={20} />
         </button>
       </header>
 
-      <div className="p-4">
-        <button
-          onClick={onNewChat}
-          className="w-full rounded-[8px] bg-[var(--color-chatbot-primary)] py-3 text-white"
-        >
-          + 새 채팅
-        </button>
-      </div>
-
       <ul className="flex-1 divide-y overflow-y-auto px-4">
-        {loading && <li className="py-6 text-center">불러오는 중…</li>}
+        {isLoading && <li className="py-6 text-center">불러오는 중…</li>}
 
-        {!loading &&
+        {!isLoading &&
           sessions.map((s) => (
             <li
               key={s.id}
-              onClick={() => onSelectChat(s.question)}
+              onClick={() => onSelectSession(s.id)}
               className="cursor-pointer py-4 hover:bg-gray-50"
             >
               <p className="text-sm font-medium">{s.title}</p>
