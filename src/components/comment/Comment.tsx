@@ -3,7 +3,9 @@ import profile from '@/assets/profile.png'
 import type { Comment } from '@/schema/index'
 import { format } from 'date-fns'
 import { useAuthStore } from '@/store/auth.store'
-import { useDeleteComment, useEditComment } from '@/hooks/useCommentMutation'
+import { useDeleteComment } from '@/hooks/useCommentMutation'
+import { useState } from 'react'
+import CommentEdit from '@/components/comment/CommentEdit'
 
 export default function Comment({
   comment,
@@ -17,12 +19,7 @@ export default function Comment({
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated())
   const user = useAuthStore((state) => state.user)
 
-  // 댓글 수정
-  const { mutate: editMutate } = useEditComment()
-
-  const handleEdit = () => {
-    console.log('comment id: ', comment.id)
-  }
+  const [isEditing, setIsEditing] = useState<boolean>(false)
 
   // 댓글 삭제
   const { mutate: deleteMutate } = useDeleteComment()
@@ -49,15 +46,24 @@ export default function Comment({
           </span>
         </div>
 
-        <p className="whitespace-pre-line text-gray-800">{comment.content}</p>
+        {isEditing ? (
+          <CommentEdit
+            questionId={questionId}
+            answerId={answerId}
+            myComment={comment}
+            setIsEditing={setIsEditing}
+          />
+        ) : (
+          <p className="whitespace-pre-line text-gray-800">{comment.content}</p>
+        )}
       </div>
 
-      {isMine && (
+      {isMine && !isEditing && (
         <div className="flex flex-col gap-1 py-0.5">
           <Button
             variant="ghost"
             className="h-6 w-8 text-xs text-gray-400"
-            onClick={handleEdit}
+            onClick={() => setIsEditing(true)}
           >
             수정
           </Button>

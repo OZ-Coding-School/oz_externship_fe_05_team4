@@ -7,7 +7,7 @@ import { timeAgo } from '@/utils/date'
 import profile from '@/assets/profile.png'
 import { cn } from '@/lib/utils'
 import AnswerAdoptButton from './AnswerAdoptButton'
-import CommentForm from '../comment/CommentForm'
+import CommentCreate from '../comment/CommentCreate'
 import { useState, type Dispatch, type SetStateAction } from 'react'
 
 export default function Answer({
@@ -94,7 +94,7 @@ export default function Answer({
 
       {/* 댓글 입력 */}
       {isAuthenticated && (
-        <CommentForm questionId={questionId} answerId={answer.id} />
+        <CommentCreate questionId={questionId} answerId={answer.id} />
       )}
 
       {/* 댓글 */}
