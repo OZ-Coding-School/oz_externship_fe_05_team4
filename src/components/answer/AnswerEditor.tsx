@@ -42,6 +42,7 @@ const AnswerEditor = () => {
         </div>
 
         <div className="w-1/2 overflow-y-auto bg-[#FAFAFB] p-4">
+          {/* TODO: 텍스트 에디터 뷰어로 대체하기 */}
           <div
             className="preview"
             dangerouslySetInnerHTML={{ __html: content.content }}

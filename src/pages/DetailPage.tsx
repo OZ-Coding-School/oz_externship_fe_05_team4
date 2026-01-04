@@ -91,9 +91,12 @@ export default function QuestionDetail() {
 
       {/* 질문 내용 */}
       <div className="mb-12 border-y-1 border-gray-300 py-12">
-        <p className="text-[16px] leading-relaxed text-gray-800">
-          {question.content}
-        </p>
+        {/* TODO: 텍스트 에디터 뷰어로 대체하기 */}
+        <p
+          dangerouslySetInnerHTML={{ __html: question.content }}
+          className="text-[16px] leading-relaxed text-gray-800"
+        />
+
         <div className="mt-16 border-gray-200 pt-6">
           <div className="flex justify-end">
             <Button
