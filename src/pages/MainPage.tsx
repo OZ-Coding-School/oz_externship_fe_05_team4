@@ -164,7 +164,7 @@ export default function MainPage() {
 
       {testChat && (
         <ChatbotContainer
-          initialEntry={testChat}
+          // initialEntry={testChat}
           onClose={() => setTestChat(null)}
         />
       )}
