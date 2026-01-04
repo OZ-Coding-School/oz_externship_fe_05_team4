@@ -35,28 +35,23 @@ const CommentForm = ({
       comment: data,
     })
     reset()
-    console.log(content)
   }
 
   return (
-    <div className="text-right text-sm text-gray-400">
-      {/* TODO: 댓글 등록 API 연결 (form 으로?) */}
-      <form onSubmit={handleSubmit(onSubmit)} className="relative">
-        <Textarea
-          rows={3}
-          {...register('content')}
-          className="w-full border border-gray-300 px-6 py-4 text-sm focus:ring-[0.5px]"
-          placeholder="개인정보를 공유 및 요청하거나, 명예 회손, 무단 광고, 불법 정보 유포시 모니터링 후 삭제될 수 있습니다."
-        />
-        <Button
-          type="submit"
-          disabled={!content?.trim() || isPending}
-          className="bg-primary-200 text-primary border-primary hover:bg-primary absolute right-3 bottom-3 rounded-full border px-5 py-2 text-sm transition-all duration-200 hover:text-white"
-        >
-          등록
-        </Button>
-      </form>
-    </div>
+    <form onSubmit={handleSubmit(onSubmit)} className="relative">
+      <Textarea
+        {...register('content')}
+        className="field-sizing-content min-h-28 w-full resize-none border border-gray-300 px-6 py-4 text-sm focus:ring-[0.5px]"
+        placeholder="개인정보를 공유 및 요청하거나, 명예 회손, 무단 광고, 불법 정보 유포시 모니터링 후 삭제될 수 있습니다."
+      />
+      <Button
+        type="submit"
+        disabled={!content?.trim() || isPending}
+        className="bg-primary-200 text-primary border-primary hover:bg-primary absolute right-3 bottom-3 rounded-full border px-5 py-2 text-sm transition-all duration-200 hover:text-white"
+      >
+        등록
+      </Button>
+    </form>
   )
 }
 

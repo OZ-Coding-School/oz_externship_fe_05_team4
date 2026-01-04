@@ -8,6 +8,7 @@ import profile from '@/assets/profile.png'
 import { cn } from '@/lib/utils'
 import AnswerAdoptButton from './AnswerAdoptButton'
 import CommentForm from '../comment/CommentForm'
+import { useState } from 'react'
 
 export default function Answer({
   answer,
@@ -22,6 +23,11 @@ export default function Answer({
 }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated())
   const user = useAuthStore((state) => state.user)
+
+  const [isLatest, setIsLatest] = useState<boolean>(true)
+  const sortedComments = isLatest
+    ? [...answer.comments].reverse()
+    : answer.comments
 
   const isAdoptable =
     !hasAdoptedAnswer &&
@@ -74,22 +80,26 @@ export default function Answer({
       {/* 댓글 */}
       <div>
         <div className="flex items-center justify-between py-4">
-          <div className="flex items-center">
-            <MessageCircle className="h-6 w-6 text-black" strokeWidth={2.5} />
+          <div className="flex items-center gap-1">
+            <MessageCircle className="h-6 w-6 text-black" strokeWidth={2} />
 
             <h2 className="pl-1 font-semibold">
               댓글 {answer.comments.length}개{' '}
             </h2>
           </div>
-          {/* TODO: 댓글 정렬 버튼 (최신순, 오래된 순) */}
-          <Button variant="ghost" className="flex gap-2 text-gray-600">
-            <span>최신순</span>
+
+          <Button
+            variant="ghost"
+            className="flex gap-2 text-gray-600"
+            onClick={() => setIsLatest((prev) => !prev)}
+          >
+            <span>{isLatest ? '최신순' : '오래된 순'}</span>
             <ArrowUpDown className="h-4 w-4" />
           </Button>
         </div>
 
         <div className="flex flex-col gap-8">
-          {answer.comments.map((comment) => {
+          {sortedComments.map((comment) => {
             return (
               <Comment
                 key={comment.id}
