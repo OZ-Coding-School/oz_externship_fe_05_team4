@@ -1,4 +1,4 @@
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { Pencil, SlidersHorizontal } from 'lucide-react'
 
 import SearchBar from '@/components/questions/SearchBar'
@@ -13,10 +13,18 @@ import ChatbotFloatingButton from '@/components/chatbot/ChatbotFloatingButton'
 
 import { useQuestions } from '@/hooks/useQuestions'
 import { useSessionState } from '@/hooks/useSessionState'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import type { CategoryValue } from '@/types'
+import ChatbotContainer from '@/components/chatbot/ChatbotContainer'
+import { useAuthStore } from '@/store/auth.store'
+import { Button } from '@/components/ui'
 
 export default function MainPage() {
+  // 챗봇 테스트용으로 생성 추후 삭제
+  const [testChat, setTestChat] = useState<
+    null | { type: 'floating' } | { type: 'followup'; questionId: number }
+  >(null)
+
   const [tab, setTab] = useSessionState<QuestionTabValue>('qna-tab', 'all')
   const [search, setSearch] = useSessionState('qna-search', '')
   const [sort, setSort] = useSessionState<'latest' | 'oldest'>(
@@ -52,6 +60,9 @@ export default function MainPage() {
     category
   )
 
+  const user = useAuthStore((state) => state.user)
+  const navigate = useNavigate()
+
   /*렌더*/
   return (
     <main className="mx-auto w-full max-w-[960px] px-6">
@@ -63,12 +74,17 @@ export default function MainPage() {
           <SearchBar value={search} onChange={setSearch} />
         </div>
 
-        <Link to="/Question/Create">
-          <button className="bg-primary hover:bg-primary-400 flex h-10 items-center gap-2 rounded-md px-6 text-sm font-semibold text-white">
-            <Pencil className="h-4 w-4" />
-            질문하기
-          </button>
-        </Link>
+        <Button
+          draggable={false}
+          disabled={user?.role !== 'ST'}
+          className="bg-primary hover:bg-primary-400 flex h-10 items-center gap-2 rounded-md px-6 text-sm font-semibold text-white"
+          onClick={() => {
+            navigate('/Question/Create')
+          }}
+        >
+          <Pencil className="h-4 w-4" />
+          질문하기
+        </Button>
       </section>
 
       {/* 탭 + 정렬/필터 */}
@@ -119,7 +135,7 @@ export default function MainPage() {
       </section>
 
       {/*페이지네이션*/}
-      <section className="mt-10 flex justify-center">
+      <section className="mt-10 flex justify-center pb-10">
         <QuestionPagination
           page={page}
           totalPages={totalPages}
@@ -127,6 +143,31 @@ export default function MainPage() {
         />
       </section>
       <ChatbotFloatingButton />
+      {/* 챗봇 테스트용 (임시 / 추후 삭제) */}
+      <div className="fixed bottom-6 left-6 z-50 flex flex-col gap-2">
+        <button
+          onClick={
+            () => setTestChat({ type: 'followup', questionId: 7 }) // 테스트용 ID
+          }
+          className="rounded bg-[var(--color-chatbot-primary)] px-4 py-2 text-white"
+        >
+          추가질문하기
+        </button>
+
+        <button
+          onClick={() => setTestChat(null)}
+          className="rounded bg-gray-300 px-4 py-2 text-sm text-black"
+        >
+          챗봇 닫기
+        </button>
+      </div>
+
+      {testChat && (
+        <ChatbotContainer
+          initialEntry={testChat}
+          onClose={() => setTestChat(null)}
+        />
+      )}
 
       {isFilterOpen && (
         <CategoryFilterModal

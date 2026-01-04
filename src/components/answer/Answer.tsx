@@ -1,116 +1,138 @@
-import { Avatar } from '@radix-ui/react-avatar'
-import { Button, Card, Textarea } from '../ui'
+import { Button, Card, Avatar, AvatarImage } from '@/components/ui'
 import { ArrowUpDown, MessageCircle } from 'lucide-react'
-import Comment from '@/components/common/Comment'
-
-interface AnswerProps {
-  answer_id: number
-  content: string
-  created_at: string
-  is_adopted: boolean
-  author: {
-    nickname: string
-    profile_img_url: string
-  }
-  comments: {
-    comment_id: number
-    content: string
-    created_at: string
-    author: {
-      nickname: string
-      profile_img_url: string
-    }
-  }[]
-}
+import Comment from '@/components/comment/Comment'
+import { type Answer } from '@/schema/index'
+import { useAuthStore } from '@/store/auth.store'
+import { timeAgo } from '@/utils/date'
+import profile from '@/assets/profile.png'
+import { cn } from '@/lib/utils'
+import AnswerAdoptButton from './AnswerAdoptButton'
+import CommentCreate from '../comment/CommentCreate'
+import { useState, type Dispatch, type SetStateAction } from 'react'
 
 export default function Answer({
   answer,
-  user,
+  questionId,
+  questionAuthorId,
+  hasAdoptedAnswer,
+  isEditing,
+  setIsEditing,
 }: {
-  answer: AnswerProps
-  user: any
+  answer: Answer
+  questionId: number
+  questionAuthorId: number
+  hasAdoptedAnswer: boolean
+  isEditing?: boolean
+  setIsEditing?: Dispatch<SetStateAction<boolean>>
 }) {
-  const isLoggedIn = !!user
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated())
+  const user = useAuthStore((state) => state.user)
+
+  const [isLatest, setIsLatest] = useState<boolean>(true)
+  const sortedComments = isLatest
+    ? [...answer.comments].reverse()
+    : answer.comments
+
+  const isMine = isAuthenticated && user?.id === answer.author.id
+  const isAdoptable =
+    !hasAdoptedAnswer &&
+    isAuthenticated &&
+    user?.id === questionAuthorId &&
+    user?.id !== answer.author.id
+
+  if (isEditing) {
+    return null
+  }
 
   return (
-    <Card className="mb-20">
-      <div className="p-4">
-        <div className="py-2">
-          <div className="p-4 py-3">
-            <div className="flex items-center">
-              <Avatar className="h- 10 w-10 shrink-0 rounded-full bg-purple-200" />
-              <span className="px-3">
-                {answer.author.nickname}
-                {/* TODO: 이거에 해당하는 데이터가 없음 */}
-                <div className="text-sm text-gray-400">
-                  IT스타트업 실무형 풀스택 웹 개발 부트캠프 · 채택된 답변 수 1
-                </div>
-              </span>
-              {/* 로그인한 사람에게만 '채택하기' 버튼 노출 */}
-              {isLoggedIn && (
-                <Button className="ml-auto rounded-full bg-purple-600 px-5 text-white">
-                  채택하기
-                </Button>
-              )}
-            </div>
+    <Card
+      className={cn(
+        'flex flex-col gap-8 px-10 py-12',
+        answer.isAdopted && 'border-primary relative'
+      )}
+    >
+      <div className="bg-primary absolute -top-4 left-10 rounded-full px-4 py-2 text-sm text-white">
+        질문자 채택
+      </div>
+
+      {/* 답변 헤더 */}
+      <div className="flex items-center">
+        <Avatar className="h-10 w-10 overflow-hidden rounded-full">
+          <AvatarImage src={answer.author.profileImageUrl ?? profile} />
+        </Avatar>
+
+        <span className="grow px-4">{answer.author.nickname}</span>
+
+        {/* 답변 수정하기 */}
+        {isMine && (
+          <Button
+            className="bg-primary-200 text-primary border-primary hover:bg-primary rounded-full border px-8 py-6 text-sm transition-all duration-200 hover:text-white"
+            onClick={() => setIsEditing?.(!isEditing)}
+          >
+            답변 수정하기
+          </Button>
+        )}
+
+        {/* 답변 채택하기 */}
+        {isAdoptable && (
+          <AnswerAdoptButton questionId={questionId} answerId={answer.id} />
+        )}
+      </div>
+
+      {/* 답변 내용 */}
+      <div className="mb-8 flex flex-col gap-8 border-b border-gray-200 py-4">
+        {/* TODO: 텍스트 에디터 뷰어 */}
+        <div
+          className="preview"
+          dangerouslySetInnerHTML={{ __html: answer.content }}
+        />
+
+        <span className="self-end text-sm text-gray-400">
+          {timeAgo(answer.createdAt)}
+        </span>
+      </div>
+
+      {/* 댓글 입력 */}
+      {isAuthenticated && (
+        <CommentCreate questionId={questionId} answerId={answer.id} />
+      )}
+
+      {/* 댓글 */}
+      <div>
+        <div className="flex items-center justify-between py-4">
+          <div className="flex items-center gap-1">
+            <MessageCircle className="h-6 w-6 text-black" strokeWidth={2} />
+
+            <h2 className="pl-1 font-semibold">
+              댓글 {answer.comments.length}개{' '}
+            </h2>
           </div>
-          {/* 답변 내용 */}
-          <div className="py-10 whitespace-pre-wrap">{answer.content}</div>
-          {/* {댓글 등록} */}
-          <div className="text-right text-sm text-gray-400">
-            {/* TODO 아직 시간데이터 x */}
-            11 시간 전
-            {isLoggedIn && (
-              <div>
-                <div className="relative">
-                  <Textarea
-                    className="h-20 w-full border border-gray-300 p-3 pr-19 text-sm"
-                    placeholder="  개인정보를 공유 및 요청하거나, 비방, 불법 정보 유포 등의 행위는 제재될 수 있습니다."
-                  ></Textarea>
-                  <Button className="absolute right-3 bottom-3 cursor-pointer rounded-full bg-gray-200 px-5 py-2 text-sm text-black">
-                    등록
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
 
-          <div className="p-0">
-            {/* 댓글 헤더 영역 */}
-            <div className="flex items-center justify-between border-b border-gray-200 py-4">
-              <div className="flex items-center">
-                <MessageCircle
-                  className="h-6 w-6 text-black"
-                  strokeWidth={2.5}
-                />
+          <Button
+            variant="ghost"
+            className="flex gap-2 text-gray-600"
+            onClick={() => setIsLatest((prev) => !prev)}
+          >
+            <span>{isLatest ? '최신순' : '오래된 순'}</span>
+            <ArrowUpDown className="h-4 w-4" />
+          </Button>
+        </div>
 
-                <h2 className="pl-1 font-semibold">
-                  댓글 {answer.comments.length}개{' '}
-                </h2>
-              </div>
-              <Button variant="ghost" className="cursor-pointer text-gray-600">
-                최신순
-                <ArrowUpDown className="h-4 w-4" />
-              </Button>
-            </div>
-
-            {/* {댓글 내용} */}
-
-            {answer.comments.map((comment) => {
-              return (
-                <Comment
-                  key={comment.comment_id}
-                  nickname={comment.author.nickname}
-                  date={comment.created_at}
-                  content={comment.content}
-                />
-              )
-            })}
-
-            <div className="ml-3 min-w-0 flex-1"></div>
-          </div>
+        <div className="flex flex-col gap-8">
+          {sortedComments.map((comment) => {
+            return (
+              <Comment
+                key={comment.id}
+                comment={comment}
+                questionId={questionId}
+                answerId={answer.id}
+              />
+            )
+          })}
         </div>
       </div>
     </Card>
   )
 }
+
+// TODO: 답변 삭제

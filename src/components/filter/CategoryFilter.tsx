@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Check, ChevronDown } from 'lucide-react'
-import { CATEGORY_DATA } from '@/data'
+import { CATEGORY_DATA } from '@/constants'
 import { cn } from '@/lib/utils'
 import type { CategoryValue } from '@/types/category'
 

@@ -12,6 +12,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@microsoft/fetch-event-source": "^2.0.1",
     "@radix-ui/react-avatar": "^1.1.11",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
@@ -38,9 +40,11 @@
     "lucide-react": "^0.515.0",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
+    "react-hook-form": "^7.70.0",
     "react-router": "^7.6.2",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.10",
+    "zod": "^4.3.4",
     "zustand": "^5.0.5"
   },
   "devDependencies": {

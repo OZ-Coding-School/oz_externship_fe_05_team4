@@ -9,7 +9,7 @@ import Button from '@/components/ui/Button'
 import { useState } from 'react'
 import { useLogin } from '@/hooks/index'
 
-const Login = () => {
+const TemporaryLogin = () => {
   const [selectedNum, setSelectedNum] = useState<string>('')
   const numArr = Array.from({ length: 10 }, (_, index) => index + 1)
 
@@ -50,4 +50,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default TemporaryLogin

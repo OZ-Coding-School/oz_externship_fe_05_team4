@@ -19,7 +19,7 @@ function App() {
         <Route path="*" element={<NotFound />} />
         <Route path="/Question/Detail/:id" element={<DetailPage />} />
         <Route path="/Question/Create" element={<CreatePage />} />
-        <Route path="/Question/Edit" element={<QuestionEditPage />} />
+        <Route path="/Question/Edit/:id" element={<QuestionEditPage />} />
       </Routes>
     </BrowserRouter>
   )

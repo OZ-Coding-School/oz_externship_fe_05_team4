@@ -4,4 +4,16 @@ export interface ChatMessageType {
   id: number
   role: ChatRole
   content: string
+  status?: 'loading' | 'error'
+}
+export type ChatbotEntry =
+  | { type: 'floating' }
+  | { type: 'followup'; questionId: number }
+
+export type ChatMode = 'select' | 'chat'
+
+export interface CreateChatbotSessionPayload {
+  title: string
+  using_model: string
+  Question?: number
 }

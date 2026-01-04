@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar'
+import { Avatar, AvatarImage } from '@/components/ui/index'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,24 +9,18 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/DropdownMenu'
 import profileImg from '@/assets/profile.png'
-import Login from '@/components/auth/Login'
+import TemporaryLogin from '@/components/auth/TemporaryLogin'
 import { useAuthStore } from '@/store/index'
-import { token } from '@/lib/index'
+import { useLogout } from '@/hooks/useLogin'
 
 export default function Header() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated())
-  const setUnauthenticated = useAuthStore((state) => state.setUnauthenticated)
 
-  // TODO: 로그아웃 커스텀 훅으로 TanStack 사용해서 싹 분리하기
-  // await logOut()
-  const handleLogout = () => {
-    token.clear()
-    setUnauthenticated()
-  }
+  const { mutate: logout } = useLogout()
 
   return (
     <header className="w-full">
-      <div className="flex h-12 w-full items-center justify-center bg-black px-[10px]">
+      <div className="flex h-8 w-full items-center justify-center bg-black">
         <p className="text-sm font-medium text-gray-300">
           🔥 실시간 고민·질문자별 답글 4초 안에 확인
         </p>
@@ -36,17 +30,20 @@ export default function Header() {
         <div className="mx-auto flex h-14 w-full max-w-[960px] items-center justify-between px-6">
           {/* LEFT */}
           <div className="flex items-center gap-8">
-            <Link
-              to="/"
+            <a
+              href="https://my.ozcodingschool.site/"
               className="text-gray-primary text-base font-extrabold tracking-tight"
             >
               OZ 오즈코딩스쿨
-            </Link>
+            </a>
 
             <nav className="flex items-center gap-6 text-sm font-medium text-gray-700">
-              <Link to="/community" className="hover:text-black">
+              <a
+                href="https://community.ozcodingschool.site/"
+                className="hover:text-black"
+              >
                 커뮤니티
-              </Link>
+              </a>
               <Link to="/" className="hover:text-black">
                 질의응답
               </Link>
@@ -56,21 +53,26 @@ export default function Header() {
           {/* RIGHT */}
           {!isAuthenticated ? (
             <div className="flex items-center gap-3 text-sm text-gray-700">
-              <Login />
-              <Link to="/login" className="hover:text-black">
+              <TemporaryLogin />
+              <a
+                href="https://my.ozcodingschool.site/"
+                className="hover:text-black"
+              >
                 로그인
-              </Link>
+              </a>
               <span className="text-gray-400">|</span>
-              <Link to="/signup" className="hover:text-black">
+              <a
+                href="https://my.ozcodingschool.site/"
+                className="hover:text-black"
+              >
                 회원가입
-              </Link>
+              </a>
             </div>
           ) : (
             <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Avatar className="h-8 w-8 cursor-pointer">
+              <DropdownMenuTrigger className="h-8 w-8 cursor-pointer rounded-full focus-visible:outline-none">
+                <Avatar>
                   <AvatarImage src={profileImg} alt="프로필 이미지" />
-                  <AvatarFallback>ME</AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
 
@@ -81,7 +83,7 @@ export default function Header() {
                 <DropdownMenuItem>설정</DropdownMenuItem>
                 <DropdownMenuItem
                   className="text-red-600"
-                  onClick={handleLogout}
+                  onClick={() => logout()}
                 >
                   로그아웃
                 </DropdownMenuItem>

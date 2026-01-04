@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react'
 import { Button, Card, Input } from '@/components/ui'
-import { CATEGORY_DATA } from '@/data/Category'
+import { CATEGORY_DATA } from '@/constants/Category'
 import CategorySelectGroup from '@/components/category/CategorySelectGroup'
 import { MenuBar, TextEditor } from '@/components/texteditor'
 import { useTextEditor } from '@/hooks'
 import { useQuestionCreate } from '@/hooks/useQuestionCreate'
 import { useAuthStore } from '@/store'
+import { uploadMultipleImages } from '@/utils/uploadMultipleImages'
 
 const QuestionCreate = () => {
   // 로그인 확인
@@ -18,6 +19,14 @@ const QuestionCreate = () => {
       setForm((prev) => ({ ...prev, content: editor.getHTML() }))
     },
   })
+
+  // 이미지
+  const handleUploadImages = async (files: File[]) => {
+    const imgUrls = await uploadMultipleImages(files)
+    imgUrls.forEach((url) =>
+      editor?.chain().focus().setImage({ src: url }).run()
+    )
+  }
 
   // 카테고리
   const [mainCategory, setMainCategory] = useState<string>('')
@@ -145,7 +154,7 @@ const QuestionCreate = () => {
       <div className="mt-5 w-full rounded-[20px] bg-[#ECECEC] p-[1px]">
         <div className="flex min-h-[677px] flex-col overflow-hidden rounded-[20px] bg-white">
           <div className="border-b border-[#ECECEC] bg-white">
-            <MenuBar editor={editor} />
+            <MenuBar editor={editor} onUploadImages={handleUploadImages} />
           </div>
 
           <div className="flex flex-1">
