@@ -26,14 +26,13 @@ export interface ChatbotSessionItem {
 export async function getChatbotSessions(
   questionId?: number
 ): Promise<ChatbotSessionItem[]> {
-  const res = await api.get<CursorResponse<ChatbotSessionItem>>(
-    '/chatbot/sessions',
-    {
-      params: questionId ? { questionId } : undefined,
-    }
-  )
+  const res =
+    await api.get<CursorResponse<ChatbotSessionItem>>('/chatbot/sessions')
 
-  return res.data.results
+  const all = res.data.results ?? []
+
+  if (!questionId) return all
+  return all.filter((s) => s.question === questionId)
 }
 
 //questionId로 세션 1개 찾기
@@ -41,7 +40,10 @@ export async function getSessionByQuestionId(
   questionId: number
 ): Promise<number | null> {
   const sessions = await getChatbotSessions(questionId)
-  return sessions.length > 0 ? sessions[0].id : null
+  if (sessions.length === 0) return null
+
+  // 질문당 1개 세션 정책이면 첫 번째로 충분
+  return sessions[0].id
 }
 
 const DEFAULT_USING_MODEL = 'gemini-2.5-flash'

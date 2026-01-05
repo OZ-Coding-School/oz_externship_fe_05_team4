@@ -5,9 +5,13 @@ import ChatbotContainer from './ChatbotContainer'
 
 interface Props {
   questionId: number
+  questionTitle: string
 }
 
-export default function ChatbotFloatingButton({ questionId }: Props) {
+export default function ChatbotFloatingButton({
+  questionId,
+  questionTitle,
+}: Props) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -16,6 +20,7 @@ export default function ChatbotFloatingButton({ questionId }: Props) {
       {open && (
         <ChatbotContainer
           questionId={questionId}
+          questionTitle={questionTitle}
           onClose={() => setOpen(false)}
         />
       )}
