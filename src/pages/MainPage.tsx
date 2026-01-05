@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router'
 import { Pencil, SlidersHorizontal } from 'lucide-react'
+import { useEffect } from 'react'
 
 import SearchBar from '@/components/questions/SearchBar'
 import SortMenu from '@/components/questions/SortingMenu'
@@ -9,16 +10,16 @@ import QuestionStatusTabs, {
 import QuestionCard from '@/components/questions/QuestionCard'
 import QuestionPagination from '@/components/questions/QuestionPagination'
 import CategoryFilterModal from '@/components/filter/CategoryFilterModal'
+
 import { useQuestions } from '@/hooks/useQuestions'
 import { useSessionState } from '@/hooks/useSessionState'
-import { useEffect } from 'react'
+import { useDebounce } from '@/hooks/useDebounce'
+
 import type { CategoryValue } from '@/types'
 import { useAuthStore } from '@/store/auth.store'
 import { Button } from '@/components/ui'
 
 export default function MainPage() {
-  // 챗봇 테스트용으로 생성 추후 삭제
-
   const [tab, setTab] = useSessionState<QuestionTabValue>('qna-tab', 'all')
   const [search, setSearch] = useSessionState('qna-search', '')
   const [sort, setSort] = useSessionState<'latest' | 'oldest'>(
@@ -26,7 +27,6 @@ export default function MainPage() {
     'latest'
   )
   const [page, setPage] = useSessionState<number>('qna-page', 1)
-
   const [isFilterOpen, setIsFilterOpen] = useSessionState(
     'qna-filter-open',
     false
@@ -41,14 +41,16 @@ export default function MainPage() {
     }
   )
 
+  //디바운스된 검색어
+  const debouncedSearch = useDebounce(search, 300)
+
   useEffect(() => {
     setPage(1)
-  }, [category, tab, search, sort, setPage])
+  }, [category, tab, debouncedSearch, sort, setPage])
 
-  /*데이터*/
   const { questions, totalPages, isLoading, isError } = useQuestions(
     page,
-    search,
+    debouncedSearch,
     sort,
     tab,
     category
@@ -85,7 +87,6 @@ export default function MainPage() {
       <section className="mt-10 flex items-end justify-between border-b border-gray-200">
         <QuestionStatusTabs value={tab} onChange={setTab} />
 
-        {/* Sort + Filter */}
         <div className="mb-2 flex items-center gap-6 text-sm text-gray-700">
           <SortMenu sort={sort} onChange={setSort} />
 
@@ -99,7 +100,7 @@ export default function MainPage() {
         </div>
       </section>
 
-      {/*질문 리스트*/}
+      {/* 질문 리스트 */}
       <section className="mt-8 space-y-6">
         {isLoading && (
           <div className="py-20 text-center text-sm text-gray-400">
@@ -128,7 +129,7 @@ export default function MainPage() {
           ))}
       </section>
 
-      {/*페이지네이션*/}
+      {/* 페이지네이션 */}
       <section className="mt-10 flex justify-center pb-10">
         <QuestionPagination
           page={page}
