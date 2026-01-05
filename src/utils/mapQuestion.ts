@@ -15,5 +15,6 @@ export function mapQuestion(q: QnaQuestion): Question {
       name: q.author.nickname,
       profile: q.author.profile_image_url,
     },
+    thumbnailImgUrl: q.thumbnail_img_url,
   }
 }
