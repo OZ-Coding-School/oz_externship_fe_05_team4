@@ -1,4 +1,4 @@
-import { CATEGORY_DATA } from '@/data/Category'
+import { CATEGORY_DATA } from '@/constants'
 
 export const findNamesBySubId = (
   subId: number

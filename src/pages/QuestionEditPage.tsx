@@ -10,7 +10,7 @@ import { useTextEditor } from '@/hooks'
 
 import { getQuestionDetail, patchQuestion } from '@/api/QuestionEdit.api'
 import { findNamesBySubId, findSubIdByNames, getErrorMessage } from '@/utils'
-import { queryKeys } from '@/data'
+import { queryKeys } from '@/constants'
 import type { QuestionEditForm } from '@/schema/question.schema'
 
 type Params = {
