@@ -28,6 +28,8 @@ export const useTextEditor = (args?: UseTextEditorArgs) =>
     extensions: [
       StarterKit.configure({
         hardBreak: { keepMarks: true },
+        link: false,
+        underline: false,
       }),
 
       Highlight.configure({ multicolor: true }),
