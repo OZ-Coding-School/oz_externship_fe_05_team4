@@ -55,14 +55,14 @@ export default function Header() {
             <div className="flex items-center gap-3 text-sm text-gray-700">
               <TemporaryLogin />
               <a
-                href="https://my.ozcodingschool.site/"
+                href="https://my.ozcodingschool.site/login"
                 className="hover:text-black"
               >
                 로그인
               </a>
               <span className="text-gray-400">|</span>
               <a
-                href="https://my.ozcodingschool.site/"
+                href="https://my.ozcodingschool.site/signup"
                 className="hover:text-black"
               >
                 회원가입

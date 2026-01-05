@@ -6,14 +6,15 @@ export interface ChatMessageType {
   content: string
   status?: 'loading' | 'error'
 }
-export type ChatbotEntry =
-  | { type: 'floating' }
-  | { type: 'followup'; questionId: number }
+export interface ChatbotEntry {
+  questionId: number
+  type: 'floating'
+}
 
 export type ChatMode = 'select' | 'chat'
 
 export interface CreateChatbotSessionPayload {
   title: string
   using_model: string
-  Question?: number
+  question?: number
 }

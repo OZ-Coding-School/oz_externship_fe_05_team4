@@ -1,123 +1,123 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import ChatMessageList from './ChatMessageList'
 import ChatInput from './ChatInput'
-import type { ChatMessageType, ChatbotEntry } from '@/types'
-import {
-  createChatbotSession,
-  getSessionByQuestionId,
-  getChatCompletions,
-  streamChatCompletion,
-} from '@/lib/chatbot'
-import { token } from '@/lib'
-import chatbotIcon from '@/assets/chatbot.png'
-import { ArrowLeft } from 'lucide-react'
+import type { ChatMessageType } from '@/types'
+import { useQuery } from '@tanstack/react-query'
+import { getChatCompletions, streamChatCompletion } from '@/lib/chatbot'
+import { ArrowLeft, X } from 'lucide-react'
 
-const GREETING_MESSAGE: ChatMessageType = {
+interface Props {
+  questionId: number
+  sessionId: number
+  onBack: () => void
+  onClose: () => void
+}
+
+const GREETING: ChatMessageType = {
   id: -1,
   role: 'assistant',
   content: '안녕하세요. 무엇을 도와드릴까요?',
 }
 
 export default function ChatbotLayout({
-  entry,
+  questionId,
+  sessionId,
   onBack,
-}: {
-  entry: ChatbotEntry
-  onBack?: () => void
-}) {
+  onClose,
+}: Props) {
   const [messages, setMessages] = useState<ChatMessageType[]>([])
-  const [sessionId, setSessionId] = useState<number | null>(null)
+  const [isStreaming, setIsStreaming] = useState(false)
+  const abortRef = useRef<(() => void) | null>(null)
 
+  const { data = [] } = useQuery({
+    queryKey: ['chatbot', questionId, sessionId],
+    queryFn: () => getChatCompletions(sessionId),
+    select: (d) => (d.length > 0 ? d : [GREETING]),
+  })
+
+  // 세션 변경 시 메시지 초기화
   useEffect(() => {
-    if (!token.get()) {
-      setMessages([
-        {
-          id: -99,
-          role: 'assistant',
-          content: '로그인 후 이용할 수 있습니다.',
-        },
-      ])
-      return
+    setMessages([])
+  }, [sessionId])
+
+  // 서버 데이터 반영
+  useEffect(() => {
+    setMessages(data)
+  }, [data])
+
+  // 언마운트 시 SSE 종료
+  useEffect(() => {
+    return () => {
+      abortRef.current?.()
+      abortRef.current = null
     }
+  }, [])
 
-    const init = async () => {
-      if (entry.type === 'followup') {
-        const sessionId = await getSessionByQuestionId(entry.questionId)
+  const handleSend = (text: string) => {
+    if (isStreaming) return
 
-        if (sessionId) {
-          setSessionId(sessionId)
-          setMessages(await getChatCompletions(sessionId))
-          return
-        }
+    const userId = Date.now()
+    const assistantId = userId + 1
 
-        const newSessionId = await createChatbotSession({
-          title: 'AI 챗봇 대화',
-          using_model: 'gemini-2.5-flash',
-          ...(entry.type === 'followup' ? { question: entry.questionId } : {}),
-        })
-
-        setSessionId(newSessionId)
-        setMessages([GREETING_MESSAGE])
-        return
-      }
-
-      // floating
-      setSessionId(null)
-      setMessages([GREETING_MESSAGE])
-    }
-
-    init()
-  }, [entry])
-
-  const handleSend = async (text: string) => {
-    if (!sessionId) return
-
-    const uid = Date.now()
-    const aid = uid + 1
-
-    setMessages((p) => [
-      ...p,
-      { id: uid, role: 'user', content: text },
-      { id: aid, role: 'assistant', content: '', status: 'loading' },
+    setMessages((prev) => [
+      ...prev,
+      { id: userId, role: 'user', content: text },
+      { id: assistantId, role: 'assistant', content: '', status: 'loading' },
     ])
 
-    streamChatCompletion({
+    setIsStreaming(true)
+
+    abortRef.current = streamChatCompletion({
       sessionId,
       message: text,
-      onMessage: (chunk) =>
-        setMessages((p) =>
-          p.map((m) =>
-            m.id === aid ? { ...m, content: m.content + chunk } : m
+      onMessage: (chunk) => {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantId ? { ...m, content: m.content + chunk } : m
           )
-        ),
-      onComplete: () =>
-        setMessages((p) =>
-          p.map((m) => (m.id === aid ? { ...m, status: undefined } : m))
-        ),
+        )
+      },
+      onComplete: () => {
+        setIsStreaming(false)
+        abortRef.current = null
+      },
+      onError: () => {
+        setIsStreaming(false)
+        abortRef.current = null
+      },
     })
   }
 
+  const handleBack = () => {
+    abortRef.current?.()
+    abortRef.current = null
+    onBack()
+  }
+
+  const handleClose = () => {
+    abortRef.current?.()
+    abortRef.current = null
+    onClose()
+  }
+
   return (
-    <div className="flex h-full flex-col bg-white">
-      <header className="relative flex h-[64px] items-center bg-purple-600 text-white">
-        <button onClick={onBack} className="absolute left-3">
+    <div className="flex h-full flex-col">
+      <header className="relative flex h-14 items-center justify-center bg-[var(--color-chatbot-primary)] text-white">
+        <button onClick={handleBack} className="absolute left-4">
           <ArrowLeft size={20} />
         </button>
-        <div className="mx-auto flex items-center gap-2">
-          <img
-            src={chatbotIcon}
-            className="h-8 w-8 rounded-full bg-white p-1"
-          />
-          AI OZ
-        </div>
+        AI OZ
+        <button onClick={handleClose} className="absolute right-4">
+          <X size={20} />
+        </button>
       </header>
 
-      <main className="flex-1 overflow-y-auto px-4 py-3">
-        <ChatMessageList messages={messages} />
+      <main className="flex-1 overflow-y-auto px-4 py-4">
+        <ChatMessageList sessionId={sessionId} messages={messages} />
       </main>
 
-      <footer className="border-t p-3">
-        <ChatInput onSend={handleSend} />
+      <footer className="border-t px-4 py-3">
+        <ChatInput onSend={handleSend} disabled={isStreaming} />
       </footer>
     </div>
   )
