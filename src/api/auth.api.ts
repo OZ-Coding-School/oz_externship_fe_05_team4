@@ -47,7 +47,7 @@ const fetchMe = async (): Promise<User> => {
 
 // 로그아웃
 const logOut = async (): Promise<void> => {
-  await axios.post(LOG_OUT_URL)
+  await axios.post(LOG_OUT_URL, {}, { withCredentials: true })
 }
 
 export { logIn, refreshAccessToken, fetchMe, logOut }

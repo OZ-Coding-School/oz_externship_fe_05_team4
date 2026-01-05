@@ -11,9 +11,11 @@ import { timeAgo } from '@/utils/date'
 import { useState } from 'react'
 import AnswerCreate from '@/components/answer/AnswerCreate'
 import AnswerEdit from '@/components/answer/AnswerEdit'
+import ChatbotFloatingButton from '@/components/chatbot/ChatbotFloatingButton'
 
 export default function QuestionDetail() {
   const { id } = useParams()
+  const questionId = Number(id)
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated())
   const user = useAuthStore((state) => state.user)
   const navigate = useNavigate()
@@ -176,6 +178,10 @@ export default function QuestionDetail() {
           />
         ))}
       </div>
+      <ChatbotFloatingButton
+        questionId={Number(questionId)}
+        questionTitle={question.title}
+      />
     </div>
   )
 }
