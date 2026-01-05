@@ -2,6 +2,7 @@ import { cn } from '@/lib/utils'
 import { highlightText } from '@/lib/highlight'
 import defaultProfileImg from '@/assets/profile.png'
 import { stripHtmlTags } from '@/utils/index'
+import { IMG_BASE_URL } from '@/constants/index'
 
 interface QuestionCardProps {
   id: number
@@ -11,12 +12,12 @@ interface QuestionCardProps {
   answers: number
   views: number
   time: string
-  thumbnail?: string
   author: {
     name: string
     profile: string | null
   }
   searchKeyword?: string
+  thumbnailImgUrl: string | null
 }
 
 export default function QuestionCard({
@@ -26,9 +27,9 @@ export default function QuestionCard({
   answers,
   views,
   time,
-  thumbnail,
   author,
   searchKeyword = '',
+  thumbnailImgUrl,
 }: QuestionCardProps) {
   return (
     <article className="flex w-full cursor-pointer justify-between border-b border-gray-200 py-5 transition-colors hover:bg-gray-50">
@@ -88,9 +89,12 @@ export default function QuestionCard({
         </div>
       </div>
 
-      {thumbnail && (
+      {thumbnailImgUrl && (
         <div className="h-[88px] w-[132px] flex-shrink-0 overflow-hidden rounded-md bg-gray-200">
-          <img src={thumbnail} className="h-full w-full object-cover" />
+          <img
+            src={`${IMG_BASE_URL}${thumbnailImgUrl}`}
+            className="h-full w-full object-cover"
+          />
         </div>
       )}
     </article>

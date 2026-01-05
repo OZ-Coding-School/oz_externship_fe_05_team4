@@ -22,6 +22,7 @@ export interface QnaQuestion {
   answer_count: number
   view_count: number
   created_at: string
+  thumbnail_img_url: string | null
 }
 
 //질문 목록 응답
@@ -46,6 +47,7 @@ export interface Question {
     name: string
     profile: string | null
   }
+  thumbnailImgUrl: string | null
 }
 
 //탭 상태 (UI 상태)
