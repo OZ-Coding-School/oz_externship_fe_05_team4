@@ -2,7 +2,7 @@ import chatbotIcon from '@/assets/chatbot.png'
 import { X } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { getChatbotSessions, type ChatbotSessionItem } from '@/lib/chatbot'
-import { queryKeys } from '@/data/queryKeys'
+import { queryKeys } from '@/constants'
 
 interface Props {
   questionId: number

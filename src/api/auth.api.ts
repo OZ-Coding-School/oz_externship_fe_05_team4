@@ -7,7 +7,6 @@ import {
 import { api } from '@/lib/api'
 import { token } from '@/lib/index'
 import type { User } from '@/types/user'
-import axios from 'axios'
 
 interface LoginPayload {
   email: string
@@ -30,10 +29,8 @@ const logIn = async (payload: LoginPayload): Promise<User> => {
 
 // 액세스 토큰 갱신 (리프레시 토큰 사용)
 const refreshAccessToken = async (): Promise<string> => {
-  const tokenResponse = await axios.post<{ access_token: string }>(
-    REFRESH_ACCESS_TOKEN_URL,
-    {},
-    { withCredentials: true }
+  const tokenResponse = await api.post<{ access_token: string }>(
+    REFRESH_ACCESS_TOKEN_URL
   )
   const { access_token: accessToken } = tokenResponse.data
   return accessToken
@@ -47,7 +44,7 @@ const fetchMe = async (): Promise<User> => {
 
 // 로그아웃
 const logOut = async (): Promise<void> => {
-  await axios.post(LOG_OUT_URL, {}, { withCredentials: true })
+  await api.post(LOG_OUT_URL)
 }
 
 export { logIn, refreshAccessToken, fetchMe, logOut }
