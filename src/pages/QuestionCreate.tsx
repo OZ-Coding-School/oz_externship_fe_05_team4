@@ -68,11 +68,11 @@ const QuestionCreate = () => {
 
     return Number(sub.id)
   }
+
   // 질문 등록 처리
   const [form, setForm] = useState({
     title: '',
     content: '',
-    categoryId: null as number | null,
   })
 
   const { mutate, isPending } = useQuestionCreate()
