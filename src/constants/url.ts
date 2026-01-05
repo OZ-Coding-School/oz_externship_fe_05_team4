@@ -8,4 +8,13 @@ const LOG_OUT_URL = `${BASE_URL}/accounts/logout`
 
 const REFRESH_ACCESS_TOKEN_URL = `${BASE_URL}/accounts/refresh`
 
-export { BASE_URL, LOG_IN_URL, USER_URL, LOG_OUT_URL, REFRESH_ACCESS_TOKEN_URL }
+const IMG_BASE_URL = import.meta.env.VITE_IMG_BASE_URL
+
+export {
+  BASE_URL,
+  LOG_IN_URL,
+  USER_URL,
+  LOG_OUT_URL,
+  REFRESH_ACCESS_TOKEN_URL,
+  IMG_BASE_URL,
+}
