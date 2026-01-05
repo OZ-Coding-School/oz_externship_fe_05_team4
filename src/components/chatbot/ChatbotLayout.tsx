@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import ChatMessageList from './ChatMessageList'
 import ChatInput from './ChatInput'
-import type { ChatMessageType, ChatbotEntry } from '@/types'
+import type { ChatMessageType } from '@/types'
 import { useQuery } from '@tanstack/react-query'
 import { getChatCompletions, streamChatCompletion } from '@/lib/chatbot'
 import { ArrowLeft, X } from 'lucide-react'
 
 interface Props {
-  entry: ChatbotEntry
+  questionId: number
   sessionId: number
   onBack: () => void
   onClose: () => void
@@ -20,7 +20,7 @@ const GREETING: ChatMessageType = {
 }
 
 export default function ChatbotLayout({
-  entry,
+  questionId,
   sessionId,
   onBack,
   onClose,
@@ -30,16 +30,22 @@ export default function ChatbotLayout({
   const abortRef = useRef<(() => void) | null>(null)
 
   const { data = [] } = useQuery({
-    queryKey: ['chatbot', entry.questionId, sessionId],
+    queryKey: ['chatbot', questionId, sessionId],
     queryFn: () => getChatCompletions(sessionId),
     select: (d) => (d.length > 0 ? d : [GREETING]),
   })
 
+  // 세션 변경 시 메시지 초기화
+  useEffect(() => {
+    setMessages([])
+  }, [sessionId])
+
+  // 서버 데이터 반영
   useEffect(() => {
     setMessages(data)
   }, [data])
 
-  //언마운트 시 SSE 종료
+  // 언마운트 시 SSE 종료
   useEffect(() => {
     return () => {
       abortRef.current?.()
@@ -107,7 +113,7 @@ export default function ChatbotLayout({
       </header>
 
       <main className="flex-1 overflow-y-auto px-4 py-4">
-        <ChatMessageList messages={messages} />
+        <ChatMessageList sessionId={sessionId} messages={messages} />
       </main>
 
       <footer className="border-t px-4 py-3">

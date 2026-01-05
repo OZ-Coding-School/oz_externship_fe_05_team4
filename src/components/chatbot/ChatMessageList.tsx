@@ -3,10 +3,11 @@ import ChatMessage from './ChatMessage'
 import type { ChatMessageType } from '@/types'
 
 interface Props {
+  sessionId: number
   messages: ChatMessageType[]
 }
 
-export default function ChatMessageList({ messages }: Props) {
+export default function ChatMessageList({ sessionId, messages }: Props) {
   const bottomRef = useRef<HTMLDivElement | null>(null)
   const prevLengthRef = useRef(0)
 
@@ -27,10 +28,9 @@ export default function ChatMessageList({ messages }: Props) {
       aria-live="polite"
     >
       {messages.map((message) => (
-        <ChatMessage key={message.id} message={message} />
+        <ChatMessage key={`${sessionId}-${message.id}`} message={message} />
       ))}
 
-      {/* scroll anchor */}
       <div ref={bottomRef} />
     </div>
   )

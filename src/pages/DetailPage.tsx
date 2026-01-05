@@ -178,7 +178,10 @@ export default function QuestionDetail() {
           />
         ))}
       </div>
-      <ChatbotFloatingButton questionId={questionId} />
+      <ChatbotFloatingButton
+        questionId={questionId}
+        questionTitle={data.title}
+      />
     </div>
   )
 }
